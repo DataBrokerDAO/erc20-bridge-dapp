@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Loadable from 'react-loadable';
 
-import Image from './components/generic/Image';
 import './App.css';
 
 const AsyncComponent = Loadable({
@@ -16,7 +15,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <Image src="./logo.svg" className="App-logo" alt="logo" />
+          <img src="images/logo.svg" className="App-logo" alt="logo" />
           <AsyncComponent />
         </header>
       </div>
