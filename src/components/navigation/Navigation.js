@@ -20,7 +20,7 @@ class Navigation extends Component {
         dark
         gradient
         items={items}
-        logo="../../../assets/images/logo-settlemint-small.png"
+        logo="images/logo-settlemint-small.png"
       />
     );
   }

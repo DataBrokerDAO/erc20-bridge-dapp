@@ -1,15 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Loadable from 'react-loadable';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
+
+import * as serviceWorker from './serviceWorker';
 
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+
+import HomePage from './components/homepage/HomePage';
+import OtherPage from './components/homepage/OtherPage';
+import LoginContainer from './components/authentication/LoginContainer';
 
 // Wait for document to load all chunks.
 window.onload = () => {
   Loadable.preloadReady().then(() => {
-    ReactDOM.hydrate(<App />, document.getElementById('root'));
+    ReactDOM.hydrate(
+      <BrowserRouter>
+        <div>
+          <Route exact path="/" component={HomePage} />
+          <Route path="/other" component={OtherPage} />
+          <Route path="/authenticate" component={LoginContainer} />
+        </div>
+      </BrowserRouter>,
+      document.getElementById('root')
+    );
   });
 };
 
