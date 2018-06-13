@@ -1,7 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), but using Webpack 4: https://github.com/facebook/create-react-app/issues/3815
+
+Server side rendering (SSR) and code splitting with `react-loadable` were added according to this tutorial: https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a
 
 Below you will find some information on how to perform common tasks.<br>
-You can find the most recent version of this guide [here](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
 ## Table of Contents
 
@@ -12,6 +13,7 @@ You can find the most recent version of this guide [here](https://github.com/fac
   - [npm start](#npm-start)
   - [npm test](#npm-test)
   - [npm run build](#npm-run-build)
+  - [npm run server](#npm-run-server)
   - [npm run eject](#npm-run-eject)
 - [Supported Browsers](#supported-browsers)
 - [Supported Language Features and Polyfills](#supported-language-features-and-polyfills)
@@ -191,6 +193,10 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [deployment](#deployment) for more information.
+
+### `npm run server`
+
+Runs the app on an express server. Preferably, run `npm run build` before starting the server.<br>
 
 ### `npm run eject`
 
@@ -1547,7 +1553,7 @@ global.localStorage = localStorageMock
 >   // ...
 >   "setupTestFrameworkScriptFile": "<rootDir>/src/setupTests.js"
 >  }
->  ```
+>```
 
 ### Focusing and Excluding Tests
 
