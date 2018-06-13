@@ -1,8 +1,16 @@
+# React server side rendering boilerplate
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), but using Webpack 4: https://github.com/facebook/create-react-app/issues/3815
 
-Server side rendering (SSR) and code splitting with `react-loadable` were added according to this tutorial: https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a
-
 Below you will find some information on how to perform common tasks.<br>
+
+## Changes to create react app
+
+* Ran `npm run eject`
+* Using `npm` in stead of `yarn`
+* Server side rendering (SSR) and code splitting with `react-loadable` were added according to this tutorial: https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a
+
+
 
 ## Table of Contents
 
