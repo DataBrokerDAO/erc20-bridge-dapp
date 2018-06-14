@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Loadable from 'react-loadable';
+import { StaticRouter } from 'react-router-dom';
 
 import manifest from '../../build/asset-manifest.json';
 
@@ -32,7 +33,9 @@ export default (req, res, next) => {
     // Modules: all the names of the chunks the server used to render the initial state of the app.
     const html = ReactDOMServer.renderToString(
       <Loadable.Capture report={m => modules.push(m)}>
-        <App />
+        <StaticRouter>
+          <App />
+        </StaticRouter>
       </Loadable.Capture>
     );
 
