@@ -12,6 +12,10 @@ class Navigation extends Component {
       {
         name: 'Other',
         url: '/other'
+      },
+      {
+        name: 'Login',
+        url: '/authenticate'
       }
     ];
 

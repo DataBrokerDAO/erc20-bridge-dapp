@@ -8,11 +8,12 @@ const gradient2 = '#00aeef';
 const gradient3 = '#b8d659';
 
 const StyledParticles = styled(Particles)`
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
   height: 100vh;
+  width: 100vw;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
   background-image: linear-gradient(
     to right,
     ${gradient1},
