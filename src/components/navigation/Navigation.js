@@ -10,13 +10,10 @@ class Navigation extends Component {
         url: '/'
       },
       {
-        name: 'Other',
-        url: '/other'
-      },
-      {
         name: 'Login',
-        url: '/authenticate'
+        url: '/authenticate/login'
       }
+      // TODO: add your navigation items here
     ];
 
     return (
@@ -24,7 +21,7 @@ class Navigation extends Component {
         dark
         gradient
         items={items}
-        logo="images/logo-settlemint-small.png"
+        logo="images/logo_certimint_white.svg"
       />
     );
   }

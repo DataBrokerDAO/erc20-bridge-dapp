@@ -6301,4 +6301,12 @@ button:focus {
   * Utilities.
   */
 .gradient {
-  background-image: linear-gradient(to right, #2e3192, #00aeef 40%, #b8d659); }
+  background-image: linear-gradient(to right, #2e3192, #00aeef); }
+
+.particles {
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  overflow: hidden; }

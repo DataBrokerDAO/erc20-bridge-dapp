@@ -8,7 +8,7 @@ import FormLogo from './generic/FormLogo';
 const StyledAccountLink = styled.p`
   position: absolute;
   bottom: 40px;
-  right: 40px;
+  left: 40px;
 `;
 
 const StyledTitle = styled.h1`
@@ -16,21 +16,18 @@ const StyledTitle = styled.h1`
 `;
 
 class LoginForm extends Component {
-  renderLeft() {
+  renderRight() {
     return [
-      <StyledTitle
-        key="title"
-        className="h3 mb-4 font-weight-normal text-right"
-      >
-        Hi! nice to see you again
+      <StyledTitle key="title" className="h3 mb-4 font-weight-normal text-left">
+        Welcome!
       </StyledTitle>,
       <StyledAccountLink key="link" className="font-weight-light">
-        No account yet? <Link to="create-account">Create account</Link>
+        Already have an account? <Link to="login">Log in</Link>
       </StyledAccountLink>
     ];
   }
 
-  renderRight() {
+  renderLeft() {
     return [
       <FormLogo />,
       <form key="form" className="text-left">
@@ -53,24 +50,32 @@ class LoginForm extends Component {
             required
           />
         </div>
+        <div className="form-group">
+          <label htmlFor="inputConfirmPassword">Confirm password</label>
+          <input
+            type="password"
+            id="inputConfirmPassword"
+            className="form-control font-weight-light mb-3 form-control-sm"
+            required
+          />
+        </div>
         <button
           className="btn btn-lg btn-primary btn-block mb-3"
           type="submit "
         >
-          Log in
+          Create account
         </button>
-        <p className="font-weight-light">
-          <Link exact to="forgot-password">
-            Forgot password?
-          </Link>
-        </p>
       </form>
     ];
   }
 
   render() {
     return (
-      <FormContainer left={this.renderLeft()} right={this.renderRight()} />
+      <FormContainer
+        left={this.renderLeft()}
+        right={this.renderRight()}
+        rightColored
+      />
     );
   }
 }

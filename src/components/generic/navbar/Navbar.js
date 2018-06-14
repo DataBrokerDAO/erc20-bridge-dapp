@@ -1,19 +1,11 @@
-import _ from 'lodash';
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 
 import NavbarLogo from './NavbarLogo';
 
 class Navbar extends Component {
   render() {
-    const {
-      dark = false,
-      gradient = false,
-      items,
-      logo,
-      className
-    } = this.props;
+    const { dark = false, gradient = false, items, logo } = this.props;
 
     return (
       <nav

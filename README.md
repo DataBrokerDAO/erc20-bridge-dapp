@@ -2,13 +2,29 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), but using Webpack 4: https://github.com/facebook/create-react-app/issues/3815
 
-Below you will find some information on how to perform common tasks.<br>
-
 ## Changes to create react app
 
 * Ran `npm run eject`
 * Using `npm` in stead of `yarn`
-* Server side rendering (SSR) and code splitting with `react-loadable` were added according to this tutorial: https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a
+* Server side rendering (SSR) and code splitting with `react-loadable`: https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a
+* Setup SSR with `styled-components`: https://medium.com/styled-components/the-simple-guide-to-server-side-rendering-react-with-styled-components-d31c6b2b8fbf
+* SSR and client routing: [https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9](https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9)
+
+## Images
+
+To use images, add them to `public/images`. Then refer to them in your components like this:
+
+````javascript
+<img src="images/[filename].[file-extension]" />
+````
+
+Using the classic import way will not work with SSR. 
+
+## Styling
+
+The boilerplate uses [Bootstrap v4](https://getbootstrap.com/). Generic overrides to Bootstrap can be found in `src/index.scss`. To compile them to css, run `npm run build-css`.
+
+Specific component styles are added through `styled-components`. 
 
 
 
