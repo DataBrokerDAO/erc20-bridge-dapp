@@ -4,10 +4,12 @@ import styled from 'styled-components';
 const StyledContainer = styled.div`
   background-color: white;
   position: absolute;
-  top: 20px;
   left: 0;
   right: 0;
   max-width: 800px;
+  @media (min-width: 576px) {
+    top: 100px;
+  }
 `;
 
 const StyledLeft = styled.div`

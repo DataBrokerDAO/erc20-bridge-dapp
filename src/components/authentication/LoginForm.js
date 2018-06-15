@@ -32,7 +32,7 @@ class LoginForm extends Component {
 
   renderRight() {
     return [
-      <FormLogo />,
+      <FormLogo key="logo" />,
       <form key="form" className="text-left">
         <div className="form-group">
           <label htmlFor="inputEmail">Email</label>
@@ -60,9 +60,7 @@ class LoginForm extends Component {
           Log in
         </button>
         <p className="font-weight-light">
-          <Link exact to="forgot-password">
-            Forgot password?
-          </Link>
+          <Link to="forgot-password">Forgot password?</Link>
         </p>
       </form>
     ];

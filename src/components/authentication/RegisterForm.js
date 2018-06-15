@@ -29,7 +29,7 @@ class LoginForm extends Component {
 
   renderLeft() {
     return [
-      <FormLogo />,
+      <FormLogo key="logo" />,
       <form key="form" className="text-left">
         <div className="form-group">
           <label htmlFor="inputEmail">Email</label>

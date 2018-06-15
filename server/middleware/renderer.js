@@ -7,10 +7,11 @@ import { ServerStyleSheet } from 'styled-components';
 import manifest from '../../build/asset-manifest.json';
 
 // Map chunk names to assets.
-const extractAssets = (assets, chunks) =>
-  Object.keys(assets).filter(
+const extractAssets = (assets, chunks) => {
+  return Object.keys(assets).filter(
     asset => chunks.indexOf(asset.replace('.js', '')) > -1
   );
+};
 
 // Import main App component.
 import App from '../../src/App';
