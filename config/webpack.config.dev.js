@@ -12,6 +12,7 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
+const { ReactLoadablePlugin } = require('react-loadable/webpack');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -311,6 +312,13 @@ module.exports = {
     ]
   },
   plugins: [
+    new ReactLoadablePlugin({
+      filename: './build/react-loadable.json'
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'manifest',
+      minChunks: Infinity
+    }),
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">

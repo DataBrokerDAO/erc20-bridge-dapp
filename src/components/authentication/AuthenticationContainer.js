@@ -5,12 +5,13 @@ import Loadable from 'react-loadable';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import ForgotPasswordForm from './ForgotPasswordForm';
+import Loading from '../generic/Loading'
 
 const AsyncParticles = Loadable({
-  loader: () =>
-    import(/* webpackChunkName: "particles" */ './generic/ParticlesBackground'),
-  loading: () => <p>Loading</p>,
-  modules: ['particles']
+  loader: () => import('./generic/ParticlesBackground.js'),
+  loading: Loading,
+  delay: 1000,
+  timeout: 10000
 });
 
 class LoginContainer extends Component {

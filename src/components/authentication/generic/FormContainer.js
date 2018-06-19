@@ -6,9 +6,9 @@ const StyledContainer = styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  max-width: 800px;
+  max-width: 800px !important;
   @media (min-width: 576px) {
-    top: 100px;
+    top: 100px !important;
   }
 `;
 
