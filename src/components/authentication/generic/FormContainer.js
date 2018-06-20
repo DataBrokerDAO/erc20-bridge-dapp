@@ -1,50 +1,30 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
-
-const StyledContainer = styled.div`
-  background-color: white;
-  position: absolute;
-  left: 0;
-  right: 0;
-  max-width: 800px;
-  @media (min-width: 576px) {
-    top: 100px;
-  }
-`;
-
-const StyledLeft = styled.div`
-  padding: 40px;
-`;
-
-const StyledRight = styled.div`
-  padding: 40px;
-`;
 
 export default class FormContainer extends Component {
   render() {
     const { left, right, rightColored } = this.props;
 
     return (
-      <StyledContainer className="container">
+      <div className="container auth">
         <div className="row">
-          <StyledLeft
-            className="col-sm d-xs-none d-sm-block"
+          <div
+            className="col-sm d-xs-none d-sm-block left"
             style={{
               backgroundColor: rightColored ? '#fff' : '#f5f5f5'
             }}
           >
             {left}
-          </StyledLeft>
-          <StyledRight
-            className="col-sm"
+          </div>
+          <div
+            className="col-sm right"
             style={{
               backgroundColor: rightColored ? '#f5f5f5' : '#fff'
             }}
           >
             {right}
-          </StyledRight>
+          </div>
         </div>
-      </StyledContainer>
+      </div>
     );
   }
 }

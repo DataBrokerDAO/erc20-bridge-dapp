@@ -1,19 +1,8 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import FormContainer from './generic/FormContainer';
 import FormLogo from './generic/FormLogo';
-
-const StyledAccountLink = styled.p`
-  position: absolute;
-  bottom: 40px;
-  right: 40px;
-`;
-
-const StyledP = styled.p`
-  height: 150px;
-`;
 
 class ForgotPasswordForm extends Component {
   renderLeft() {
@@ -21,16 +10,16 @@ class ForgotPasswordForm extends Component {
       <h1 key="title" className="h3 mb-4 font-weight-normal text-right">
         Forgot your password?
       </h1>,
-      <StyledP className="font-weight-light text-right">
+      <p className="font-weight-light text-right p">
         No worries! We can get you into your account again. We'll send you an
         email to reset your password.
-      </StyledP>,
-      <StyledAccountLink key="link" className="font-weight-light">
+      </p>,
+      <p key="link" className="font-weight-light a">
         Remember your password?{' '}
         <Link exact to="login">
           Log in
         </Link>
-      </StyledAccountLink>
+      </p>
     ];
   }
 

@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 
 import NavbarLogo from './NavbarLogo';
 
+import './Navbar.css';
+
 class Navbar extends Component {
   render() {
     const { dark = false, gradient = false, items, logo } = this.props;

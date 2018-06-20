@@ -1,16 +1,10 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 
-const StyledContent = styled.div`
-  margin-top: 20px;
-  margin-bottom: 20px;
-`;
+import './Content.css';
 
 class Content extends Component {
   render() {
-    return (
-      <StyledContent className="container">{this.props.children}</StyledContent>
-    );
+    return <main className="container content">{this.props.children}</main>;
   }
 }
 

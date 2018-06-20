@@ -7,7 +7,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 * Ran `npm run eject`
 * Using `npm` in stead of `yarn`
 * Server side rendering (SSR) and code splitting with `react-loadable`: https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a
-* Setup SSR with `styled-components`: https://medium.com/styled-components/the-simple-guide-to-server-side-rendering-react-with-styled-components-d31c6b2b8fbf
 * SSR and client routing: [https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9](https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9)
 
 ## Images
@@ -24,7 +23,32 @@ Using the classic import way will not work with SSR.
 
 The boilerplate uses [Bootstrap v4](https://getbootstrap.com/). Generic overrides to Bootstrap can be found in `src/index.scss`. To compile them to css, run `npm run build-css`.
 
-Specific component styles are added through `styled-components`. 
+Not using styled components for now because we ran into this problem: https://github.com/styled-components/styled-components/issues/992, https://github.com/styled-components/styled-components/issues/1395.
+
+For now, we are reverting to the classic inline way of styling, common in React:
+
+````javascript
+import React, { Component } from 'react';
+
+const styledContainer = {
+  marginTop: '20px',
+  marginBottom: '20px'
+}; // define styles in js, add them inline
+
+class Content extends Component {
+  render() {
+    return (
+      <div style={styledContainer} className="container"> 
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+export default Content;
+````
+
+Another alternative is using  an external .css/.scss file and `className`. When a lot of styles need to be added to a component, we prefer using an external .css/.scss file, for optimized performance.
 
 
 
