@@ -5,19 +5,22 @@ import Loadable from 'react-loadable';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import ForgotPasswordForm from './ForgotPasswordForm';
-import Loading from '../generic/Loading'
+import Loading from '../generic/Loading';
+import Particles from './generic/ParticlesBackground';
 
-const AsyncParticles = Loadable({
-  loader: () => import('./generic/ParticlesBackground.js'),
-  loading: Loading,
-  delay: 1000,
-  timeout: 10000
-});
+import './Authentication.css';
+
+// const AsyncParticles = Loadable({
+//   loader: () => import('./generic/ParticlesBackground.js'),
+//   loading: Loading,
+//   delay: 1000,
+//   timeout: 10000
+// });
 
 class LoginContainer extends Component {
   render() {
     return [
-      <AsyncParticles key="particles" />,
+      <Particles key="particles" />,
       <Route path="/authenticate/login" component={LoginForm} />,
       <Route path="/authenticate/create-account" component={RegisterForm} />,
       <Route

@@ -1,0 +1,27 @@
+.auth {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  max-width: 800px; }
+  .auth .left,
+  .auth .right {
+    padding: 40px; }
+  .auth .h1 {
+    height: 120px; }
+  .auth .p {
+    height: 150px; }
+  .auth .a {
+    position: absolute;
+    bottom: 40px;
+    left: 40px; }
+  .auth .logo {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; }
+
+.particles {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; }

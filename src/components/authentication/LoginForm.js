@@ -1,32 +1,18 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import FormContainer from './generic/FormContainer';
 import FormLogo from './generic/FormLogo';
 
-const StyledAccountLink = styled.p`
-  position: absolute;
-  bottom: 40px;
-  right: 40px;
-`;
-
-const StyledTitle = styled.h1`
-  height: 120px;
-`;
-
 class LoginForm extends Component {
   renderLeft() {
     return [
-      <StyledTitle
-        key="title"
-        className="h3 mb-4 font-weight-normal text-right"
-      >
+      <h1 key="title" className="h3 mb-4 font-weight-normal text-right h1">
         Hi! nice to see you again
-      </StyledTitle>,
-      <StyledAccountLink key="link" className="font-weight-light">
+      </h1>,
+      <p key="link" className="font-weight-light a">
         No account yet? <Link to="create-account">Create account</Link>
-      </StyledAccountLink>
+      </p>
     ];
   }
 

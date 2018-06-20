@@ -1,23 +1,23 @@
 /**
  * loading method that handles all react-loadable loaders.
  */
-import React, { Component } from 'react';
+import React from 'react';
 
 export default props => {
   if (props.error) {
     return (
-      <div>
+      <div className="loading">
         Error! <button onClick={props.retry}>Retry</button>
       </div>
     );
   } else if (props.timedOut) {
     return (
-      <div>
+      <div className="loading">
         Taking a long time... <button onClick={props.retry}>Retry</button>
       </div>
     );
   } else if (props.pastDelay) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   } else {
     return null;
   }

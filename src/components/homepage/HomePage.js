@@ -7,8 +7,9 @@ class HomePage extends Component {
   render() {
     return [
       <Navigation key="nav" />,
-      <Content key="content">
-        <p>Home</p>
+
+      <Content>
+        <h1>Hi</h1>
       </Content>
     ];
   }

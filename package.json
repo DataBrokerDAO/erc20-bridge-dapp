@@ -54,7 +54,6 @@
     "react-universal-component": "^2.9.0",
     "sass-loader": "^7.0.3",
     "style-loader": "0.19.1",
-    "styled-components": "^3.3.2",
     "sw-precache-webpack-plugin": "0.11.4",
     "thread-loader": "1.1.2",
     "uglifyjs-webpack-plugin": "1.1.6",
