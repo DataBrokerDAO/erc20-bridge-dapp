@@ -1,24 +1,12 @@
 import express from 'express';
 import Loadable from 'react-loadable';
-
-import serverRenderer from './middleware/renderer';
+import indexController from './controllers/index';
 
 const PORT = process.env.PORT || 3000;
-const path = require('path');
 
 // Initialize the application and create the routes.
 const app = express();
-const router = express.Router();
-
-// Root (/) should always serve our server rendered page.
-router.use('^/$', serverRenderer);
-
-// Static resources (images, css, ...)
-router.use(express.static(path.resolve(__dirname, '..', 'build')));
-
-router.use('*', serverRenderer);
-
-app.use(router);
+app.use(indexController);
 
 // Start the app.
 Loadable.preloadAll().then(() => {

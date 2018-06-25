@@ -2,19 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Loadable from 'react-loadable';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider as ReduxProvider } from 'react-redux';
 
 import * as serviceWorker from './serviceWorker';
 
 import './index.css';
 import App from './App';
+import configureStore from './redux/configureStore';
+
+const store = configureStore(window.REDUX_STATE || {}); // If there is state on the server, store will be configured with that, otherwise with empty state.
 
 // Wait for document to load all chunks.
 window.onload = () => {
   Loadable.preloadReady().then(() => {
     ReactDOM.hydrate(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>,
+      <ReduxProvider store={store}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ReduxProvider>,
       document.getElementById('root')
     );
   });

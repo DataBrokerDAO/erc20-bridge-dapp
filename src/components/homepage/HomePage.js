@@ -1,18 +1,42 @@
 import React, { Component } from 'react';
 
+import { connect } from 'react-redux';
+import { setMessage } from '../../redux/appReducer';
+
 import Navigation from '../navigation/Navigation';
 import Content from '../generic/Content';
 
 class HomePage extends Component {
+  componentDidMount() {
+    if (!this.props.message) {
+      this.props.updateMessage("Hi, I'm from client!");
+    }
+  }
+
   render() {
     return [
       <Navigation key="nav" />,
 
       <Content>
-        <h1>Hi</h1>
+        <p>Redux: {this.props.message}</p>
       </Content>
     ];
   }
 }
 
-export default HomePage;
+const mapStateToProps = state => {
+  return {
+    message: state.app.message
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    updateMessage: txt => dispatch(setMessage(txt))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HomePage);
