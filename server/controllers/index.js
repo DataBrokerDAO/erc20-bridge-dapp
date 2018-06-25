@@ -24,4 +24,6 @@ router.use(
   })
 );
 
+router.use('*', actionIndex);
+
 export default router;
