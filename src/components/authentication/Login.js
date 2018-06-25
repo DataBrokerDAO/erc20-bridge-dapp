@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 
 import FormContainer from './generic/FormContainer';
 import FormLogo from './generic/FormLogo';
+import Particles from './generic/ParticlesBackground';
+
+import './Authentication.css';
 
 class LoginForm extends Component {
   renderLeft() {
@@ -53,9 +56,14 @@ class LoginForm extends Component {
   }
 
   render() {
-    return (
-      <FormContainer left={this.renderLeft()} right={this.renderRight()} />
-    );
+    return [
+      <Particles key="particles" />,
+      <FormContainer
+        key="formContainer"
+        left={this.renderLeft()}
+        right={this.renderRight()}
+      />
+    ];
   }
 }
 

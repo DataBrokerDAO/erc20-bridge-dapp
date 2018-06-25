@@ -3,20 +3,30 @@ import { Link } from 'react-router-dom';
 
 import FormContainer from './generic/FormContainer';
 import FormLogo from './generic/FormLogo';
+import Particles from './generic/ParticlesBackground';
 
-class LoginForm extends Component {
-  renderRight() {
+import './Authentication.css';
+
+class ForgotPasswordForm extends Component {
+  renderLeft() {
     return [
-      <h1 key="title" className="h3 mb-4 font-weight-normal text-left h1">
-        Welcome!
+      <h1 key="title" className="h3 mb-4 font-weight-normal text-right">
+        Forgot your password?
       </h1>,
+      <p className="font-weight-light text-right p">
+        No worries! We can get you into your account again. We'll send you an
+        email to reset your password.
+      </p>,
       <p key="link" className="font-weight-light a">
-        Already have an account? <Link to="login">Log in</Link>
+        Remember your password?{' '}
+        <Link exact to="login">
+          Log in
+        </Link>
       </p>
     ];
   }
 
-  renderLeft() {
+  renderRight() {
     return [
       <FormLogo key="logo" />,
       <form key="form" className="text-left">
@@ -30,43 +40,26 @@ class LoginForm extends Component {
             autoFocus
           />
         </div>
-        <div className="form-group">
-          <label htmlFor="inputPassword">Password</label>
-          <input
-            type="password"
-            id="inputPassword"
-            className="form-control font-weight-light mb-3 form-control-sm"
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="inputConfirmPassword">Confirm password</label>
-          <input
-            type="password"
-            id="inputConfirmPassword"
-            className="form-control font-weight-light mb-3 form-control-sm"
-            required
-          />
-        </div>
         <button
           className="btn btn-lg btn-primary btn-block mb-3"
           type="submit "
         >
-          Create account
+          Send email
         </button>
       </form>
     ];
   }
 
   render() {
-    return (
+    return [
+      <Particles key="particles" />,
       <FormContainer
+        key="formContainer"
         left={this.renderLeft()}
         right={this.renderRight()}
-        rightColored
       />
-    );
+    ];
   }
 }
 
-export default LoginForm;
+export default ForgotPasswordForm;
