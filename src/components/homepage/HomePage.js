@@ -16,8 +16,7 @@ class HomePage extends Component {
   render() {
     return [
       <Navigation key="nav" />,
-
-      <Content>
+      <Content key="content">
         <p>Redux: {this.props.message}</p>
       </Content>
     ];

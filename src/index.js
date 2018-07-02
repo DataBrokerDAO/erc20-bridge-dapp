@@ -15,7 +15,10 @@ const store = configureStore(window.REDUX_STATE || {}); // If there is state on 
 // Wait for document to load all chunks.
 window.onload = () => {
   Loadable.preloadReady().then(() => {
-    ReactDOM.hydrate(
+    const root = document.getElementById('root');
+    const renderOrHydrate = root.innerHTML.trim().length ? 'hydrate' : 'render';
+
+    ReactDOM[renderOrHydrate](
       <ReduxProvider store={store}>
         <BrowserRouter>
           <App />
