@@ -1,0 +1,30 @@
+sudo: required
+
+services:
+  - docker
+
+language: node_js
+
+notifications:
+  slack:
+    rooms:
+      - settlemint:5QuOPa3Z4kJbfbNIgei0asur#mint
+
+node_js:
+  - '10'
+
+before_install:
+  - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ./.npmrc
+
+script:
+  - npm run build
+  - npm run test
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script:
+      - bash ./scripts/deploy.sh
+    on:
+      all_branches: true
+      repo: settlemint/certimint-dapp
