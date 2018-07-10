@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import express from 'express';
 import Loadable from 'react-loadable';
 import indexController from './controllers/index';

@@ -1,18 +1,14 @@
+// tslint:disable:jsx-no-lambda
+import fs from 'fs';
+import path from 'path';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Loadable from 'react-loadable';
 import { getBundles } from 'react-loadable/webpack';
-import { StaticRouter } from 'react-router-dom';
 import { Provider as ReduxProvider } from 'react-redux';
-
-import manifest from '../../build/asset-manifest.json';
+import { StaticRouter } from 'react-router-dom';
 import stats from '../../build/react-loadable.json';
-
-// Import main App component.
-import App from '../../src/App';
-
-const path = require('path');
-const fs = require('fs');
+import App from '../../src/layouts/App';
 
 export default store => (req, res, next) => {
   // Point to the html file created by CRA's build tool.
@@ -43,8 +39,8 @@ export default store => (req, res, next) => {
     const reduxState = JSON.stringify(store.getState());
 
     // Get all chunks and make them into script tags
-    let bundles = getBundles(stats, modules);
-    let scripts = bundles
+    const bundles = getBundles(stats, modules);
+    const scripts = bundles
       .map(bundle => {
         return `<script src="/${bundle.file}"></script>`;
       })

@@ -1,35 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Loadable from 'react-loadable';
-import { BrowserRouter } from 'react-router-dom';
 import { Provider as ReduxProvider } from 'react-redux';
-
-import * as serviceWorker from './serviceWorker';
-
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
-import App from './App';
+import App from './layouts/App';
 import configureStore from './redux/configureStore';
-
-const store = configureStore(window.REDUX_STATE || {}); // If there is state on the server, store will be configured with that, otherwise with empty state.
-
+import * as serviceWorker from './serviceWorker';
+var store = configureStore(window.REDUX_STATE || {}); // If there is state on the server, store will be configured with that, otherwise with empty state.
 // Wait for document to load all chunks.
-window.onload = () => {
-  Loadable.preloadReady().then(() => {
-    const root = document.getElementById('root');
-    const renderOrHydrate = root.innerHTML.trim().length ? 'hydrate' : 'render';
-
-    ReactDOM[renderOrHydrate](
-      <ReduxProvider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ReduxProvider>,
-      document.getElementById('root')
-    );
-  });
+window.onload = function () {
+    Loadable.preloadReady().then(function () {
+        var root = document.getElementById('root');
+        var renderOrHydrate = root.innerHTML.trim().length
+            ? 'hydrate'
+            : 'render';
+        ReactDOM[renderOrHydrate](React.createElement(ReduxProvider, { store: store },
+            React.createElement(BrowserRouter, null,
+                React.createElement(App, null))), document.getElementById('root'));
+    });
 };
-
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
 serviceWorker.unregister();
+//# sourceMappingURL=index.js.map

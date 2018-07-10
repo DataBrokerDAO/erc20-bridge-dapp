@@ -1,56 +1,7 @@
-# React server side rendering boilerplate
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), but using Webpack 4: https://github.com/facebook/create-react-app/issues/3815
-
-## Changes to create react app
-
-* Ran `npm run eject`
-* Using `npm` in stead of `yarn`
-* Server side rendering (SSR) and code splitting with `react-loadable`: https://medium.com/bucharestjs/upgrading-a-create-react-app-project-to-a-ssr-code-splitting-setup-9da57df2040a
-* SSR and client routing: [https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9](https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9)
-
-## Images
-
-To use images, add them to `public/images`. Then refer to them in your components like this:
-
-````javascript
-<img src="images/[filename].[file-extension]" />
-````
-
-Using the classic import way will not work with SSR. 
-
-## Styling
-
-The boilerplate uses [Bootstrap v4](https://getbootstrap.com/). Generic overrides to Bootstrap can be found in `src/index.scss`. To compile them to css, run `npm run build-css`.
-
-Not using styled components for now because we ran into this problem: https://github.com/styled-components/styled-components/issues/992, https://github.com/styled-components/styled-components/issues/1395.
-
-For now, we are reverting to the classic inline way of styling, common in React:
-
-````javascript
-import React, { Component } from 'react';
-
-const styledContainer = {
-  marginTop: '20px',
-  marginBottom: '20px'
-}; // define styles in js, add them inline
-
-class Content extends Component {
-  render() {
-    return (
-      <div style={styledContainer} className="container"> 
-        {this.props.children}
-      </div>
-    );
-  }
-}
-
-export default Content;
-````
-
-Another alternative is using  an external .css/.scss file and `className`. When a lot of styles need to be added to a component, we prefer using an external .css/.scss file, for optimized performance.
-
-
+Below you will find some information on how to perform common tasks.<br>
+You can find the most recent version of this guide [here](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
 ## Table of Contents
 
@@ -61,7 +12,6 @@ Another alternative is using  an external .css/.scss file and `className`. When 
   - [npm start](#npm-start)
   - [npm test](#npm-test)
   - [npm run build](#npm-run-build)
-  - [npm run server](#npm-run-server)
   - [npm run eject](#npm-run-eject)
 - [Supported Browsers](#supported-browsers)
 - [Supported Language Features and Polyfills](#supported-language-features-and-polyfills)
@@ -149,7 +99,7 @@ Another alternative is using  an external .css/.scss file and `className`. When 
 - [Advanced Configuration](#advanced-configuration)
 - [Troubleshooting](#troubleshooting)
   - [`npm start` doesn’t detect changes](#npm-start-doesnt-detect-changes)
-  - [`npm test` hangs on macOS Sierra](#npm-test-hangs-on-macos-sierra)
+  - [`npm test` hangs or crashes on macOS Sierra](#npm-test-hangs-or-crashes-on-macos-sierra)
   - [`npm run build` exits too early](#npm-run-build-exits-too-early)
   - [`npm run build` fails on Heroku](#npm-run-build-fails-on-heroku)
   - [`npm run build` fails to minify](#npm-run-build-fails-to-minify)
@@ -241,10 +191,6 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 See the section about [deployment](#deployment) for more information.
-
-### `npm run server`
-
-Runs the app on an express server. Preferably, run `npm run build` before starting the server.<br>
 
 ### `npm run eject`
 
@@ -675,7 +621,7 @@ Then in `package.json`, add the following lines to `scripts`:
 ```diff
    "scripts": {
 +    "build-css": "node-sass-chokidar src/ -o src/",
-+    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
++    "watch-css": "node-sass-chokidar src/ -o src/ --watch",
      "start": "react-scripts start",
      "build": "react-scripts build",
      "test": "react-scripts test --env=jsdom",
@@ -690,8 +636,8 @@ To share variables between Sass files, you can use Sass imports. For example, `s
 To enable importing files without using relative paths, you can add the  `--include-path` option to the command in `package.json`.
 
 ```
-"build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
-"watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
+"build-css": "node-sass-chokidar --include-path ./node_modules src/ -o src/",
+"watch-css": "node-sass-chokidar --include-path ./node_modules src/ -o src/ --watch",
 ```
 
 This will allow you to do imports like
@@ -1342,13 +1288,13 @@ To do this, set the `HTTPS` environment variable to `true`, then start the dev s
 set HTTPS=true&&npm start
 ```
 
+(Note: the lack of whitespace is intentional.)
+
 #### Windows (Powershell)
 
 ```Powershell
 ($env:HTTPS = $true) -and (npm start)
 ```
-
-(Note: the lack of whitespace is intentional.)
 
 #### Linux, macOS (Bash)
 
@@ -1601,7 +1547,7 @@ global.localStorage = localStorageMock
 >   // ...
 >   "setupTestFrameworkScriptFile": "<rootDir>/src/setupTests.js"
 >  }
->```
+>  ```
 
 ### Focusing and Excluding Tests
 
@@ -2619,7 +2565,7 @@ If this doesn’t happen, try one of the following workarounds:
 
 If none of these solutions help please leave a comment [in this thread](https://github.com/facebook/create-react-app/issues/659).
 
-### `npm test` hangs on macOS Sierra
+### `npm test` hangs or crashes on macOS Sierra
 
 If you run `npm test` and the console gets stuck after printing `react-scripts test --env=jsdom` to the console there might be a problem with your [Watchman](https://facebook.github.io/watchman/) installation as described in [facebook/create-react-app#713](https://github.com/facebook/create-react-app/issues/713).
 
