@@ -1,6 +1,6 @@
 {
   "name": "@settlemint/react-ssr-boilerplate",
-  "version": "0.1.0",
+  "version": "0.0.0-development",
   "private": true,
   "dependencies": {
     "@babel/core": "7.0.0-beta.46",
@@ -101,7 +101,9 @@
     "build": "npm run clean && npm run build-css && node scripts/build.js && node scripts/critical-css.js && npm run build-ts",
     "test": "node scripts/test.js --env=jsdom",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive"
+    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
+    "travis-deploy-once": "travis-deploy-once --pro",
+    "semantic-release": "semantic-release"
   },
   "browserslist": {
     "development": [
@@ -155,5 +157,11 @@
       "mjs"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "travis-deploy-once": "^5.0.1",
+    "semantic-release": "^15.6.3"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
 }

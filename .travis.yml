@@ -27,4 +27,4 @@ deploy:
       - bash ./scripts/deploy.sh
     on:
       all_branches: true
-      repo: settlemint/certimint-dapp
+      repo: settlemint/react-ssr-boilerplate
