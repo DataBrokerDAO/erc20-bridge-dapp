@@ -97,7 +97,8 @@
     "start-js": "node scripts/start.js",
     "start": "npm-run-all -p watch-css start-js",
     "server": "node scripts/server.js",
-    "build": "find ./src -name '*.js' -type f -delete && find ./src -name '*.map' -type f -delete && find ./src -name '*.d.ts' -type f -delete && npm run build-css && node scripts/build.js && node scripts/critical-css.js && npm run build-ts",
+    "clean": "find ./src -name '*.js' -type f -delete && find ./src -name '*.map' -type f -delete && find ./src -name '*.d.ts' -type f -delete && find ./src -name '*.css' -type f -delete",
+    "build": "npm run clean && npm run build-css && node scripts/build.js && node scripts/critical-css.js && npm run build-ts",
     "test": "node scripts/test.js --env=jsdom",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive"
