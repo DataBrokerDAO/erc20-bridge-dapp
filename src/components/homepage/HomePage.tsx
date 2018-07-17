@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import * as Redux from 'redux';
+// import * as Redux from 'redux';
 
-import { connect } from 'react-redux';
-import { setMessage } from '../../redux/appReducer';
+// import { connect } from 'react-redux';
 
-import { IReduxState } from '../../redux/configureStore';
+// import { IReduxState } from '../../redux/configureStore';
 import Content from '../generic/Content';
 import Navigation from '../navigation/Navigation';
 
@@ -23,12 +22,6 @@ type Props = IStateProps & IDispatchProps & IOwnProps;
 interface IState {}
 
 class HomePage extends Component<Props, IState> {
-  public componentDidMount() {
-    if (!this.props.message) {
-      this.props.updateMessage("Hi, I'm from client!");
-    }
-  }
-
   public render() {
     return [
       <Navigation key="nav" />,
@@ -39,22 +32,8 @@ class HomePage extends Component<Props, IState> {
   }
 }
 
-function mapStateToProps(state: IReduxState, ownProps: IOwnProps): IStateProps {
-  return {
-    message: state.app.message
-  };
-}
-
-function mapDispatchToProps(
-  dispatch: Redux.Dispatch,
-  ownProps: IOwnProps
-): IDispatchProps {
-  return {
-    updateMessage: (txt: string) => dispatch(setMessage(txt))
-  };
-}
-
-export default connect<IStateProps, IDispatchProps, IOwnProps>(
-  mapStateToProps,
-  mapDispatchToProps
-)(HomePage);
+export default HomePage;
+// export default connect<IStateProps, IDispatchProps, IOwnProps>(
+//   mapStateToProps,
+//   mapDispatchToProps
+// )(HomePage);
