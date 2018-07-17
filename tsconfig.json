@@ -17,7 +17,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "typings"],
   "exclude": [
     "node_modules",
     "build",

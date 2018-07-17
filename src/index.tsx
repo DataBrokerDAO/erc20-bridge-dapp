@@ -8,7 +8,7 @@ import App from './layouts/App';
 import configureStore from './redux/configureStore';
 import * as serviceWorker from './serviceWorker';
 
-const store = configureStore((window as any).REDUX_STATE || {}); // If there is state on the server, store will be configured with that, otherwise with empty state.
+const store = configureStore({}); // If there is state on the server, store will be configured with that, otherwise with empty state.
 
 // Wait for document to load all chunks.
 window.onload = () => {
