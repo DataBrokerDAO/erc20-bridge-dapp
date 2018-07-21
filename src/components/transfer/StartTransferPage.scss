@@ -1,0 +1,41 @@
+.StartTransferPage {
+    .col-sm {
+        padding: 40px;
+        /* padding-bottom: 240px; */
+    }
+
+    .shift-btn {
+        z-index: 100;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.6;
+        padding: 12px;
+        border-radius: 100px;
+    }
+
+    .shift-btn img {
+        height: 26px;
+        width: 26px;
+    }
+
+    .amount-input {
+        margin-top: 50px;
+        width: 260px;
+        margin: 0 auto;
+        margin-top: 50px;
+    }
+
+    .amount-input .invalid-feedback {
+        position: absolute;
+        bottom: -2px;
+        transform: translateY(100%)
+    }
+
+    .continue-btn {
+        display: block;
+        margin: 0 auto;
+        margin-top: 50px;
+    }
+}

@@ -14,7 +14,7 @@ export function createReducer <State>(actionMap: IActionMap<State>, initialState
   return (state: State = initialState, action: IAction) => {
     const type = action.type;
     if (actionMap[type]) {
-      actionMap[type](state, action.payload);
+      return actionMap[type](state, action.payload);
     }
     return state;
   }

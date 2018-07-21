@@ -1,14 +1,46 @@
-import { all, select } from 'redux-saga/effects'
-import { IAccountState, selectAccount } from './account';
+import { replace } from 'connected-react-router';
+import { all, call, put, select, spawn, take, takeLatest } from 'redux-saga/effects'
+import BridgeAPI from '../api/bridge';
+import * as account from './account';
+import { updateBalances } from './accountSagas';
+import { IReduxState } from './configureStore';
+import * as transfer from './transfer';
+import { depositProcedure, listenForForeignBridgeEvents, withdrawProcedure } from './transferSagas';
 
-/*
-  Starts fetchUser on each dispatched `USER_FETCH_REQUESTED` action.
-  Allows concurrent fetches of user.
-*/
+// Login Flow
 export default function* rootSaga() {
-  const account: IAccountState = yield select(selectAccount);
+  let mnemonic: string = yield select((s: IReduxState) => s.account.mnemonic);
 
-  console.log(account)
+  if (mnemonic) {
+    console.log('already logged in')
+  } else {
+    yield put(replace('/authenticate/login'))
 
-  yield all([]);
+    const action = yield take(account.SET_MNEMONIC);
+    mnemonic = action.payload.mnemonic;
+    console.log('logged in')
+  }
+
+
+  let bridge: BridgeAPI;
+  try {
+    bridge = new BridgeAPI(mnemonic);
+    yield call(bridge.setup);
+  } catch (err) {
+    console.error(err);
+    return;
+  }
+
+  // Bridge setup done -> go home 
+  yield put(replace('/'))
+  yield spawn(updateBalances, bridge);
+
+  yield spawn(listenForForeignBridgeEvents, bridge);
+
+  yield all([
+    takeLatest(transfer.START_DEPOSIT_PROCEDURE, depositProcedure(bridge)),
+    takeLatest(transfer.START_WITHDRAW_PROCEDURE, withdrawProcedure(bridge)),
+  ]);
+
+
 }

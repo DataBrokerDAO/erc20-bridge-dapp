@@ -1,14 +1,17 @@
+import { ConnectedRouter } from 'connected-react-router'
+import { createBrowserHistory } from 'history'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Loadable from 'react-loadable';
 import { Provider as ReduxProvider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+
 import './index.css';
 import App from './layouts/App';
 import configureStore from './redux/configureStore';
 import * as serviceWorker from './serviceWorker';
 
-const store = configureStore({}); // If there is state on the server, store will be configured with that, otherwise with empty state.
+const history = createBrowserHistory();
+const store = configureStore({}, history); // If there is state on the server, store will be configured with that, otherwise with empty state.
 
 // Wait for document to load all chunks.
 window.onload = () => {
@@ -20,9 +23,9 @@ window.onload = () => {
 
     ReactDOM[renderOrHydrate](
       <ReduxProvider store={store}>
-        <BrowserRouter>
+        <ConnectedRouter history={history}>
           <App />
-        </BrowserRouter>
+        </ConnectedRouter>
       </ReduxProvider>,
       document.getElementById('root')
     );

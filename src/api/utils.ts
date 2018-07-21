@@ -41,21 +41,6 @@ export async function waitForEvent({
   }
 }
 
-export async function loadContract(name: string, web3: any, address: string) {
-  const req = await fetch(
-    `https://raw.githubusercontent.com/JodusNodus/erc20-bridge/master/build/contracts/${name}.json`
-  );
-  if (!req.ok) {
-    throw new Error();
-  }
-  const resp = await req.json();
-  if (!resp.abi) {
-    throw new Error();
-  }
-  const contract = await new web3.eth.Contract(resp.abi, address);
-  return contract;
-}
-
 export async function collectSignatures(
   bridge: object,
   fromBlock: number,

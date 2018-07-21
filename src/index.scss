@@ -1,30 +1,17 @@
-/*
- * Bootstrap variable overrides.
- */
-
-$primary: rgb(71, 155, 219);
-$gradient-1: #2e3192;
-$gradient-2: #00aeef;
-
-$grid-gutter-width: 20px;
-
 // You can override all variables in this file to theme the app. Make sure to override them before the import!
 @import 'node_modules/bootstrap/scss/bootstrap.scss';
+@import './colors.scss';
 
 /**
  * Generic styles: not attached to certain components/component groups
  */
 
 body {
-  font-family: 'Poppins', sans-serif;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
 }
 
-button:focus {
-  outline: none !important;
-}
-
 .gradient {
-  background-image: linear-gradient(to right, $gradient-1, $gradient-2);
+  min-height: 100vh;
+  background-image: linear-gradient(0.3turn, $color-accent-1 10%, $color-accent-2 100%);
 }

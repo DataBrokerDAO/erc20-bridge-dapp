@@ -2,12 +2,18 @@ import { assert } from 'chai';
 import HDWalletProvider from 'truffle-hdwallet-provider';
 import Web3 from 'web3';
 
+import * as ForeignBridge from '@settlemint/erc20-bridge/build/contracts/ForeignBridge.json';
+import * as HomeBridge from '@settlemint/erc20-bridge/build/contracts/HomeBridge.json';
+import * as SampleERC20 from '@settlemint/erc20-bridge/build/contracts/SampleERC20.json';
+
+import BigNumber from '../../node_modules/bignumber.js';
+import { EventLog } from '../../node_modules/web3/types';
 import getConfig from './config';
-import { collectSignatures, loadContract, waitForEvent  } from './utils';
+import { collectSignatures, waitForEvent } from './utils';
 
 export default class BridgeAPI {
 
-  private seed: string;
+  private mnemonic: string;
 
   private home3: any;
   private foreign3: any;
@@ -20,42 +26,35 @@ export default class BridgeAPI {
   private homeToken: any;
   private foreignToken: any;
 
-  constructor(seed: string) {
-    this.seed = seed;
+  constructor(mnemonic: string) {
+    this.mnemonic = mnemonic;
+
+    this.setup = this.setup.bind(this);
+    this.getHomeTokenBalance = this.getHomeTokenBalance.bind(this);
+    this.getForeignTokenBalance = this.getForeignTokenBalance.bind(this);
+    this.tranferToHome = this.tranferToHome.bind(this);
+    this.tranferToForeign = this.tranferToForeign.bind(this);
+    this.pollForEvents = this.pollForEvents.bind(this);
+    this.getRequiredValidators = this.getRequiredValidators.bind(this);
   }
 
   public async setup() {
     const config = getConfig();
 
     this.home3 = new Web3(
-      new HDWalletProvider(this.seed, config.HOME_URL)
+      new HDWalletProvider(this.mnemonic, config.HOME_URL)
     );
     this.foreign3 = new Web3(
-      new HDWalletProvider(this.seed, config.FOREIGN_URL)
+      new HDWalletProvider(this.mnemonic, config.FOREIGN_URL)
     );
 
     this.account = (await this.home3.eth.getAccounts())[0];
 
-    this.homeBridge = await loadContract(
-      'HomeBridge',
-      this.home3,
-      config.HOME_BRIDGE
-    );
-    this.foreignBridge = await loadContract(
-      'ForeignBridge',
-      this.foreign3,
-      config.FOREIGN_BRIDGE
-    );
-    this.homeToken = await loadContract(
-      'SampleERC20',
-      this.home3,
-      config.HOME_TOKEN
-    );
-    this.foreignToken = await loadContract(
-      'SampleERC20',
-      this.foreign3,
-      config.FOREIGN_TOKEN
-    );
+    this.homeBridge = await new this.home3.eth.Contract(HomeBridge.abi, config.HOME_BRIDGE);
+    this.foreignBridge = await new this.foreign3.eth.Contract(ForeignBridge.abi, config.FOREIGN_BRIDGE);
+
+    this.homeToken = await new this.home3.eth.Contract(SampleERC20.abi, config.HOME_TOKEN);
+    this.foreignToken = await new this.foreign3.eth.Contract(SampleERC20.abi, config.FOREIGN_TOKEN);
   }
 
   public async getHomeTokenBalance() {
@@ -63,28 +62,39 @@ export default class BridgeAPI {
   }
 
   public async getForeignTokenBalance() {
-    return await this.foreign3.methods.balanceOf(this.account).call({ from: this.account });
+    return await this.foreignToken.methods.balanceOf(this.account).call({ from: this.account });
   }
 
-  public async tranferToForeign(amount: number) {
-    assert.isAtLeast(
-      await this.getHomeTokenBalance(),
-      amount,
+  public async getRequiredValidators() {
+    const num: number = await this.foreignBridge.methods.requiredValidators().call({ from: this.account });
+    return num;
+  }
+
+  public async pollForEvents(blockNumber?: number, filter?: object) {
+    if (blockNumber === undefined) {
+      blockNumber = await this.foreign3.eth.getBlockNumber();
+    }
+    const events: EventLog[] = await this.foreignBridge.getPastEvents('allEvents', {
+      fromBlock: blockNumber,
+      toBlock: 'latest',
+      filter
+    });
+    return events;
+  }
+
+  public async tranferToForeign(amount: string) {
+    const balance = new BigNumber(await this.getHomeTokenBalance());
+    const amountNum = new BigNumber(amount);
+
+    assert.ok(
+      !balance.minus(amountNum).isNegative(),
       `Account doesnt have ${amount} tokens to transfer`
     );
 
     const tx = await this.homeToken.methods
       .transfer(this.homeBridge._address, amount)
       .send({ from: this.account });
-
-    await waitForEvent({
-      event: 'MintRequestExecuted',
-      contract: this.foreignBridge,
-      fromBlock: tx.blockNumber,
-      filter: {
-        _transactionHash: tx.transactionHash
-      }
-    });
+    return tx;
   }
 
   public async tranferToHome(amount: number) {

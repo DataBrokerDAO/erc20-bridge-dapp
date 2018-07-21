@@ -1,26 +1,41 @@
+import { connectRouter, routerMiddleware } from 'connected-react-router'
+import { History } from 'history'
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { createLogger } from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
 
 import rootSaga from './rootSaga';
 
 import { IAccountState, reducer as accountReducer } from './account';
-
-const sagaMiddleware = createSagaMiddleware()
-const createStoreWithMiddleware = composeWithDevTools(applyMiddleware(sagaMiddleware))(
-  createStore
-);
+import { ITransferState, reducer as transferReducer } from './transfer';
 
 export interface IReduxState {
-  account: IAccountState
+  account: IAccountState,
+  transfer: ITransferState
 }
 
 const rootReducer = combineReducers({
   account: accountReducer,
+  transfer: transferReducer,
 });
 
-export default function configureStore(initialState = {}) {
-  const store = createStoreWithMiddleware(rootReducer, initialState);
+export default function configureStore(initialState = {}, history: History) {
+  const sagaMiddleware = createSagaMiddleware();
+
+  const middleware = [
+    sagaMiddleware,
+    routerMiddleware(history),
+    createLogger()
+  ];
+
+  const createStoreWithMiddleware = composeWithDevTools(
+    applyMiddleware(...middleware)
+  )(createStore);
+
+  const reducer = connectRouter(history)(rootReducer);
+
+  const store = createStoreWithMiddleware(reducer, initialState);
   sagaMiddleware.run(rootSaga);
   return store;
 }
