@@ -4,6 +4,7 @@ import { delay } from "redux-saga";
 import { call, put, select, spawn, take, takeEvery } from "redux-saga/effects";
 import { EventLog } from "../../node_modules/web3/types";
 import BridgeAPI from "../api/bridge";
+import { setHomeEthBalance } from "./account";
 import { updateBalances } from "./accountSagas";
 import { IReduxState } from "./configureStore";
 import {
@@ -88,17 +89,21 @@ export const withdrawProcedure = (bridge: BridgeAPI) => function* (action: IActi
 
     yield take(eventFilter('WithdrawRequestGranted', filter));
 
-    yield put(setEstimateWithdrawGas('1000000000000'))
+    const signatures = yield select((s: IReduxState) => s.transfer.signatures);
+    const withdrawCall = bridge.getWithdrawCall(amount, tx.blockNumber, signatures);
+
+    const estimateGas = yield call(bridge.estimateWithdrawGas, withdrawCall);
+    yield put(setEstimateWithdrawGas(estimateGas));
+
+    const homeEthBalance = yield call(bridge.getHomeBalance);
+    yield put(setHomeEthBalance(homeEthBalance));
 
     yield put(setCurrentStep(WithdrawalSteps.Signed));
 
     yield take(CONTINUE_WITHDRAW);
     yield put(setCurrentStep(WithdrawalSteps.Withdrawing))
 
-    const signatures = yield select((s: IReduxState) => s.transfer.signatures);
-
-    const withdrawTx = yield call(bridge.withdrawTokens, amount, tx.blockNumber, signatures);
-    console.log(withdrawTx)
+    yield call(bridge.sendWithdraw, withdrawCall);
 
     yield call(delay, 1000);
 

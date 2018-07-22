@@ -41,7 +41,10 @@ export default class BridgeAPI {
     this.tranferToForeign = this.tranferToForeign.bind(this);
     this.pollForEvents = this.pollForEvents.bind(this);
     this.getRequiredValidators = this.getRequiredValidators.bind(this);
-    this.withdrawTokens = this.withdrawTokens.bind(this);
+    this.getWithdrawCall = this.getWithdrawCall.bind(this);
+    this.estimateWithdrawGas = this.estimateWithdrawGas.bind(this);
+    this.sendWithdraw = this.sendWithdraw.bind(this);
+    this.getHomeBalance = this.getHomeBalance.bind(this);
   }
 
   public async setup() {
@@ -69,6 +72,10 @@ export default class BridgeAPI {
 
   public async getForeignTokenBalance() {
     return await this.foreignToken.methods.balanceOf(this.account).call({ from: this.account });
+  }
+
+  public async getHomeBalance() {
+    return await this.home3.eth.getBalance(this.account);
   }
 
   public async getRequiredValidators() {
@@ -119,7 +126,7 @@ export default class BridgeAPI {
     return tx;
   }
 
-  public async withdrawTokens(amount: string, withdrawBlock: number, signatures: ISignature[]) {
+  public getWithdrawCall(amount: string, withdrawBlock: number, signatures: ISignature[]) {
     const v = [];
     const r = [];
     const s = [];
@@ -130,7 +137,7 @@ export default class BridgeAPI {
       s.push(sign.s);
     }
 
-    const call = this.homeBridge.methods.withdraw(
+    return this.homeBridge.methods.withdraw(
       this.homeToken._address,
       this.account,
       amount,
@@ -139,14 +146,18 @@ export default class BridgeAPI {
       r,
       s
     );
+  }
 
-    const tx = await call.send({
+  public async estimateWithdrawGas(call: any) {
+    return Math.ceil((await call.estimateGas()) * 2);
+  }
+
+  public async sendWithdraw(call: any) {
+    return await call.send({
       from: this.account,
-      gas: Math.ceil((await call.estimateGas()) * 2),
+      gas: await this.estimateWithdrawGas(call),
       gasPrice: await this.home3.eth.getGasPrice()
     });
-
-    return tx;
   }
 
 }
