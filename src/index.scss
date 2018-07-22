@@ -13,5 +13,8 @@ body {
 
 .gradient {
   min-height: 100vh;
-  background-image: linear-gradient(0.3turn, $color-accent-1 10%, $color-accent-2 100%);
+  background-image: linear-gradient(0.4turn, $color-accent-1 10%, $color-accent-2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

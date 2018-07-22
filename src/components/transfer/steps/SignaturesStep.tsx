@@ -5,7 +5,7 @@ import { IProps } from '../PendingTransferPage';
 import 'react-circular-progressbar/dist/styles.css';
 
 const SignaturesStep = ({ transfer }: IProps) => (
-    <div className="SignaturesStep">
+    <div className="Step SignaturesStep">
         <h5 className="text-muted font-weight-light">Collecting signatures</h5>
         <p className="mt-2">Your request to transfer tokens must be approved by {transfer.requiredSignatureCount} validators.</p>
         <CircularProgressbar

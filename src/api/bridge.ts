@@ -9,7 +9,7 @@ import * as SampleERC20 from '@settlemint/erc20-bridge/build/contracts/SampleERC
 import BigNumber from '../../node_modules/bignumber.js';
 import { EventLog } from '../../node_modules/web3/types';
 import getConfig from './config';
-import { collectSignatures, waitForEvent } from './utils';
+import { waitForEvent } from './utils';
 
 export default class BridgeAPI {
 
@@ -97,10 +97,12 @@ export default class BridgeAPI {
     return tx;
   }
 
-  public async tranferToHome(amount: number) {
-    assert.isAtLeast(
-      await this.getForeignTokenBalance(),
-      amount,
+  public async tranferToHome(amount: string) {
+    const balance = new BigNumber(await this.getForeignTokenBalance());
+    const amountNum = new BigNumber(amount);
+
+    assert.ok(
+      !balance.minus(amountNum).isNegative(),
       `Account doesnt have ${amount} tokens to transfer`
     );
 
@@ -108,24 +110,7 @@ export default class BridgeAPI {
       .transfer(this.foreignBridge._address, amount)
       .send({ from: this.account });
 
-    await waitForEvent({
-      event: 'WithdrawRequestGranted',
-      contract: this.foreignBridge,
-      fromBlock: tx.blockNumber,
-      filter: { _transactionHash: tx.transactionHash }
-    });
-
-    const signatures = await collectSignatures(
-      this.foreignBridge,
-      tx.blockNumber,
-      tx.transactionHash
-    );
-
-    assert.isAtLeast(signatures.v.length, 1, 'Not enough signatures were collected');
-    return {
-      ...signatures,
-      amount
-    };
+    return tx;
   }
 
   public async withdrawTokens({ amount, withdrawBlock, v, r, s }: any) {

@@ -115,7 +115,10 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
           className="col-sm d-xs-none d-sm-block"
           style={{ backgroundColor: !withdraw ? '#f5f5f5' : undefined }}>
           {withdraw ? leftSide : rightSide}
-          <ActionButton text={withdraw ? 'Withdraw' : 'Deposit'} disabled={!amountInput.length || !isValidAmount} onClick={withdraw ? this.handleWithdrawal : this.handleDeposit} />
+          <ActionButton
+            text={withdraw ? 'Withdraw' : 'Deposit'}
+            disabled={!amountInput.length || !isValidAmount}
+            onClick={withdraw ? this.handleWithdrawal : this.handleDeposit} />
         </div>
       </div>
     );

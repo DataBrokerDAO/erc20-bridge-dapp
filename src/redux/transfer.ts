@@ -19,6 +19,8 @@ export const FOREIGN_BRIDGE_EVENT = ctx('FOREIGN_BRIDGE_EVENT');
 export const SET_CURRENT_STEP = ctx('SET_CURRENT_STEP');
 export const SET_REQUIRED_SIGNATURE_COUNT = ctx('SET_REQUIRED_SIGNATURE_COUNT');
 export const ADD_SIGNATURE = ctx('ADD_SIGNATURE');
+export const SET_ESTIMATE_WITHDRAW_GAS = ctx('SET_ESTIMATE_WITHDRAW_GAS');
+export const CONTINUE_WITHDRAW = ctx('CONTINUE_WITHDRAW');
 
 /**
  * Reducer
@@ -47,7 +49,7 @@ export enum WithdrawalSteps {
     Init,
     Sent,
     Signed,
-    Withdraw,
+    Withdrawing,
     Received
 }
 
@@ -62,6 +64,7 @@ export interface ITransferState {
     amount: string,
     requiredSignatureCount: number,
     signatureCount: number,
+    estimateWithdrawGas: string,
 }
 
 const initialState: ITransferState = {
@@ -69,6 +72,7 @@ const initialState: ITransferState = {
     amount: '0',
     requiredSignatureCount: 0,
     signatureCount: 0,
+    estimateWithdrawGas: '0',
 }
 
 const startedReducer = (type: TransferType, currentStep: DepositSteps | WithdrawalSteps) =>
@@ -101,6 +105,14 @@ export const reducer = createReducer<ITransferState>({
         ...state,
         requiredSignatureCount
     }),
+    [ADD_SIGNATURE]: (state) => ({
+        ...state,
+        signatureCount: state.signatureCount + 1
+    }),
+    [SET_ESTIMATE_WITHDRAW_GAS]: (state, { estimateWithdrawGas }) => ({
+        ...state,
+        estimateWithdrawGas
+    }),
 }, initialState)
 
 /**
@@ -125,4 +137,13 @@ export const setCurrentStep = (step: DepositSteps | WithdrawalSteps) => ({
 export const setRequiredSignatureCount = (requiredSignatureCount: number) => ({
     type: SET_REQUIRED_SIGNATURE_COUNT,
     payload: { requiredSignatureCount }
+});
+
+export const setEstimateWithdrawGas = (estimateWithdrawGas: string) => ({
+    type: SET_ESTIMATE_WITHDRAW_GAS,
+    payload: { estimateWithdrawGas }
+});
+
+export const continueWithdraw = () => ({
+    type: CONTINUE_WITHDRAW,
 });

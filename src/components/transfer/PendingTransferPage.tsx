@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import { IAccountState } from '../../redux/account';
 import { IReduxState } from '../../redux/configureStore';
-import { DepositSteps, ITransferState, TransferType } from '../../redux/transfer';
+import { DepositSteps, ITransferState, TransferType, WithdrawalSteps } from '../../redux/transfer';
 
 import 'rc-steps/assets/iconfont.css';
 import 'rc-steps/assets/index.css';
@@ -14,6 +14,8 @@ import './PendingTransferPage.css';
 import SendingStep from './steps/SendingStep';
 import SignaturesStep from './steps/SignaturesStep';
 import SuccessStep from './steps/SuccessStep';
+import WithdrawingStep from './steps/WithdrawingStep';
+import WithdrawStep from './steps/WithdrawStep';
 
 
 export interface IProps {
@@ -26,7 +28,6 @@ class PendingTransferPage extends Component<IProps> {
     public renderDepositStep() {
         const { currentStep } = this.props.transfer;
         if (currentStep === undefined) {
-            // return SignaturesStep(this.props);
             return;
         }
         const steps = {
@@ -34,24 +35,56 @@ class PendingTransferPage extends Component<IProps> {
             [DepositSteps.Sent]: SignaturesStep,
             [DepositSteps.Minted]: SuccessStep,
         }
-        return steps[currentStep](this.props);
+        return steps[currentStep];
+    }
+
+    public renderWithdrawStep() {
+        const { currentStep } = this.props.transfer;
+        if (currentStep === undefined) {
+            return;
+        }
+        const steps = {
+            [WithdrawalSteps.Init]: SendingStep,
+            [WithdrawalSteps.Sent]: SignaturesStep,
+            [WithdrawalSteps.Signed]: WithdrawStep,
+            [WithdrawalSteps.Withdrawing]: WithdrawingStep,
+            [WithdrawalSteps.Received]: SuccessStep,
+        }
+        return steps[currentStep];
     }
 
     public render() {
-        const { amount, type, currentStep } = this.props.transfer;
+        const { transfer, account } = this.props;
+        const { amount, type, currentStep } = transfer;
+
+        const CurrentStep = type === TransferType.Deposit
+            ? this.renderDepositStep()
+            : this.renderWithdrawStep()
+
         return (
             <div className="row PendingTransferPage">
                 <h4>Transfering {amount} DTX to {type === TransferType.Withdrawal ? "Main Network" : "Databroker Network"}</h4>
 
                 <div className="step-container">
-                    {this.renderDepositStep()}
+                    {!!CurrentStep && <CurrentStep transfer={transfer} account={account} />}
                 </div>
 
-                <Steps current={currentStep} style={{ marginTop: 40 }}>
-                    <Step title="Tokens sent to Bridge" />
-                    <Step title="Collect Signatures" />
-                    <Step title="Tokens Minted" />
-                </Steps>
+                {type === TransferType.Deposit
+                    ? (
+                        <Steps current={currentStep} style={{ marginTop: '40px' }}>
+                            <Step title="Sent" />
+                            <Step title="Signatures" />
+                            <Step title="Minted" />
+                        </Steps>
+                    ) : (
+                        <Steps current={currentStep} style={{ marginTop: '40px' }}>
+                            <Step title="Sent" />
+                            <Step title="Signatures" />
+                            <Step title="Withdraw" />
+                            <Step title="Withdrawing" />
+                            <Step title="Received" />
+                        </Steps>
+                    )}
             </div>
         )
     }
