@@ -38,9 +38,6 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
   public state = {
     withdraw: false,
     amountInput: "",
-    newHomeBalance: "",
-    newForeignBalance: "",
-    isValidAmount: true
   }
 
   public handleShift = () => {
@@ -60,24 +57,23 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
   }
   public handleAmountChange = (evt: any) => {
     const value = evt.target.value;
-    if (!value.length) {
-      this.setState({
-        amountInput: value,
-        newHomeBalance: '',
-        newForeignBalance: '',
-        isValidAmount: true
-      });
-      return;
-    }
-    const amount = new BigNumber(value, 10);
+    this.setState({
+      amountInput: value,
+    });
+  }
+
+  public render() {
+    const { account } = this.props;
+    const { withdraw, amountInput } = this.state;
 
     const homeBalance = new BigNumber(this.props.account.homeBalance, 10);
     const foreignBalance = new BigNumber(this.props.account.foreignBalance, 10);
 
+    const amount = new BigNumber(amountInput.length ? amountInput : '0', 10);
     let newHomeBalance;
     let newForeignBalance;
 
-    if (this.state.withdraw) {
+    if (withdraw) {
       newHomeBalance = homeBalance.plus(amount);
       newForeignBalance = foreignBalance.minus(amount);
     } else {
@@ -85,20 +81,10 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
       newForeignBalance = foreignBalance.plus(amount);
     }
 
-    this.setState({
-      amountInput: amount.toString(10),
-      newHomeBalance: newHomeBalance.toString(10),
-      newForeignBalance: newForeignBalance.toString(10),
-      isValidAmount: amount.isPositive() && !amount.isZero() && newHomeBalance.isPositive() && newForeignBalance.isPositive()
-    })
-  }
+    const isValidAmount = amount.isPositive() && newHomeBalance.isPositive() && newForeignBalance.isPositive();
 
-  public render() {
-    const { account } = this.props;
-    const { withdraw, amountInput, newHomeBalance, newForeignBalance, isValidAmount } = this.state;
-
-    const leftSide = this.renderSide("Main Network", withdraw, account.homeBalance, newHomeBalance);
-    const rightSide = this.renderSide("Databroker Network", !withdraw, account.foreignBalance, newForeignBalance);
+    const leftSide = this.renderSide("Main Network", withdraw, account.homeBalance, newHomeBalance.toString(10));
+    const rightSide = this.renderSide("Databroker Network", !withdraw, account.foreignBalance, newForeignBalance.toString(10));
 
     return (
       <div className="row StartTransferPage">
@@ -127,7 +113,7 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
   private renderSide = (name: string, receiving = false, balance: string, newBalance: string) => (
     <div>
       <h3>{name}</h3>
-      {!newBalance.length ? (
+      {balance === newBalance ? (
         <h5 className="font-weight-light">Balance: {balance} DTX</h5>
       ) : (
           <h5 className={"font-weight-light " + (receiving ? 'text-success' : 'text-danger')}>
