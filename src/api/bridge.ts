@@ -9,7 +9,12 @@ import * as SampleERC20 from '@settlemint/erc20-bridge/build/contracts/SampleERC
 import BigNumber from '../../node_modules/bignumber.js';
 import { EventLog } from '../../node_modules/web3/types';
 import getConfig from './config';
-import { waitForEvent } from './utils';
+
+export interface ISignature {
+  v: string;
+  r: string;
+  s: string;
+}
 
 export default class BridgeAPI {
 
@@ -36,6 +41,7 @@ export default class BridgeAPI {
     this.tranferToForeign = this.tranferToForeign.bind(this);
     this.pollForEvents = this.pollForEvents.bind(this);
     this.getRequiredValidators = this.getRequiredValidators.bind(this);
+    this.withdrawTokens = this.withdrawTokens.bind(this);
   }
 
   public async setup() {
@@ -113,7 +119,17 @@ export default class BridgeAPI {
     return tx;
   }
 
-  public async withdrawTokens({ amount, withdrawBlock, v, r, s }: any) {
+  public async withdrawTokens(amount: string, withdrawBlock: number, signatures: ISignature[]) {
+    const v = [];
+    const r = [];
+    const s = [];
+
+    for (const sign of signatures) {
+      v.push(sign.v);
+      r.push(sign.r);
+      s.push(sign.s);
+    }
+
     const call = this.homeBridge.methods.withdraw(
       this.homeToken._address,
       this.account,
@@ -130,13 +146,7 @@ export default class BridgeAPI {
       gasPrice: await this.home3.eth.getGasPrice()
     });
 
-    // Wait until hometoken is transfered
-    await waitForEvent({
-      event: 'Transfer',
-      contract: this.homeToken._address,
-      fromBlock: tx.blockNumber - 1,
-      filter: { to: this.account, value: amount }
-    });
+    return tx;
   }
 
 }

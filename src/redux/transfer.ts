@@ -1,5 +1,6 @@
 import { AnyAction } from 'redux';
 import { EventLog } from 'web3/types';
+import { ISignature } from '../api/bridge';
 import { createContext, createReducer } from './utils';
 
 /**
@@ -64,6 +65,7 @@ export interface ITransferState {
     amount: string,
     requiredSignatureCount: number,
     signatureCount: number,
+    signatures: ISignature[],
     estimateWithdrawGas: string,
 }
 
@@ -73,6 +75,7 @@ const initialState: ITransferState = {
     requiredSignatureCount: 0,
     signatureCount: 0,
     estimateWithdrawGas: '0',
+    signatures: []
 }
 
 const startedReducer = (type: TransferType, currentStep: DepositSteps | WithdrawalSteps) =>
@@ -105,8 +108,9 @@ export const reducer = createReducer<ITransferState>({
         ...state,
         requiredSignatureCount
     }),
-    [ADD_SIGNATURE]: (state) => ({
+    [ADD_SIGNATURE]: (state, { signature }) => ({
         ...state,
+        signatures: signature ? [...state.signatures, signature] : state.signatures,
         signatureCount: state.signatureCount + 1
     }),
     [SET_ESTIMATE_WITHDRAW_GAS]: (state, { estimateWithdrawGas }) => ({
@@ -146,4 +150,9 @@ export const setEstimateWithdrawGas = (estimateWithdrawGas: string) => ({
 
 export const continueWithdraw = () => ({
     type: CONTINUE_WITHDRAW,
+});
+
+export const addSignature = (signature?: ISignature) => ({
+    type: ADD_SIGNATURE,
+    payload: { signature }
 });

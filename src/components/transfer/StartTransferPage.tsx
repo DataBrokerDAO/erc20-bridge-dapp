@@ -97,8 +97,8 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
     const { account } = this.props;
     const { withdraw, amountInput, newHomeBalance, newForeignBalance, isValidAmount } = this.state;
 
-    const leftSide = this.renderSide("Main Network", false, account.homeBalance, newHomeBalance);
-    const rightSide = this.renderSide("Databroker Network", true, account.foreignBalance, newForeignBalance);
+    const leftSide = this.renderSide("Main Network", withdraw, account.homeBalance, newHomeBalance);
+    const rightSide = this.renderSide("Databroker Network", !withdraw, account.foreignBalance, newForeignBalance);
 
     return (
       <div className="row StartTransferPage">
