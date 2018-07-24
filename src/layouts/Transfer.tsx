@@ -8,7 +8,7 @@ export default () => (
     <Container>
         <Switch>
             <Route path="/deposit" component={PendingTransferPage} />
-            <Route path="/withdrawal" component={PendingTransferPage} />
+            <Route path="/withdraw" component={PendingTransferPage} />
             <Route path="/" component={StartTransferPage} />
         </Switch>
     </Container>

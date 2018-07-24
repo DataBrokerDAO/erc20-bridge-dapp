@@ -7,7 +7,7 @@ import * as HomeBridge from '@settlemint/erc20-bridge/build/contracts/HomeBridge
 import * as SampleERC20 from '@settlemint/erc20-bridge/build/contracts/SampleERC20.json';
 
 import BigNumber from '../../node_modules/bignumber.js';
-import { EventLog } from '../../node_modules/web3/types';
+import { EventLog, Transaction } from '../../node_modules/web3/types';
 import getConfig from './config';
 import { matchesFilter } from './utils';
 
@@ -19,12 +19,13 @@ export interface ISignature {
 
 export default class BridgeAPI {
 
+  public account: any;
+
   private mnemonic: string;
 
   private home3: any;
   private foreign3: any;
 
-  private account: any;
 
   private homeBridge: any;
   private foreignBridge: any;
@@ -142,22 +143,26 @@ export default class BridgeAPI {
     return tx;
   }
 
-  public async getTransferToForeign(txHash: string) {
-    const tx = await this.home3.eth.getTransaction(txHash);
-    tx.events = await this.homeToken.getPastEvents('Transfer', {
+  public async getTransaction(txHash: string, web3: any, token: any) {
+    const tx: Transaction = await web3.eth.getTransaction(txHash);
+    let events = await token.getPastEvents('Transfer', {
       fromBlock: tx.blockNumber,
       toBlock: tx.blockNumber,
     })
-    tx.events = tx.events.filter((evt: EventLog) =>
-      evt.returnValues.from === this.account);
-    if (tx.events.length) {
-      tx.tokenValue = tx.events[0].returnValues.value;
+    events = events.filter((evt: EventLog) => evt.returnValues.from === this.account);
+    let amount;
+    if (events.length) {
+      amount = events[0].returnValues.value;
     }
-    return tx;
+    return { tx, amount };
+  }
+
+  public async getTransferToForeign(txHash: string) {
+    return await this.getTransaction(txHash, this.home3, this.homeToken);
   }
 
   public async getTransferToHome(txHash: string) {
-    return await this.foreign3.eth.getTransaction(txHash);
+    return await this.getTransaction(txHash, this.foreign3, this.foreignToken);
   }
 
   public getWithdrawCall(amount: string, withdrawBlock: number, signatures: ISignature[]) {

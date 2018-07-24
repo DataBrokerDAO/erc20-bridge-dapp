@@ -8,9 +8,11 @@ export const ctx = createContext('account');
 
 export const LOGIN = ctx('LOGIN');
 export const LOGOUT = ctx('LOGOUT');
+export const SET_ADDRESS = ctx('SET_ADDRESS');
 
 export const FETCH_BALANCES_SUCCESS = ctx('FETCH_BALANCES_SUCCESS');
 
+export const REQUEST_HOME_ETH_BALANCE = ctx('REQUEST_HOME_ETH_BALANCE');
 export const SET_HOME_ETH_BALANCE = ctx('SET_HOME_ETH_BALANCE');
 
 /**
@@ -24,6 +26,7 @@ export enum AccountStatus {
 
 export interface IAccountState {
   status: AccountStatus;
+  address?: string,
   mnemonic?: string;
   homeBalance: string;
   foreignBalance: string;
@@ -43,6 +46,10 @@ export const reducer = createReducer<IAccountState>({
     ...state,
     status: AccountStatus.LoggedIn,
     mnemonic
+  }),
+  [SET_ADDRESS]: (state, { address }) => ({
+      ...state,
+      address
   }),
   [FETCH_BALANCES_SUCCESS]: (state, { homeBalance, foreignBalance }) => ({
     ...state,
@@ -76,6 +83,15 @@ export const fetchBalancesSuccess = (homeBalance: string, foreignBalance: string
 export const setHomeEthBalance = (homeEthBalance: string) => ({
   type: SET_HOME_ETH_BALANCE,
   payload: { homeEthBalance }
+});
+
+export const setAddress = (address: string) => ({
+    type: SET_ADDRESS,
+    payload: { address }
+});
+
+export const requestHomeEthBalance = () => ({
+    type: REQUEST_HOME_ETH_BALANCE,
 });
 
 /**

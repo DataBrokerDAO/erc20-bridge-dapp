@@ -10,8 +10,8 @@ const SignaturesStep = ({ transfer }: IProps) => (
         <p className="mt-2">Your request to transfer tokens must be approved by {transfer.requiredSignatureCount} validators.</p>
         <CircularProgressbar
             className="signature-progress mt-3"
-            percentage={(transfer.signatureCount / transfer.requiredSignatureCount) * 100}
-            text={transfer.signatureCount + '/' + transfer.requiredSignatureCount}
+            percentage={(transfer.signatures.length / transfer.requiredSignatureCount) * 100}
+            text={transfer.signatures.length + '/' + transfer.requiredSignatureCount}
         />
     </div>
 )

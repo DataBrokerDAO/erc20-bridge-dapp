@@ -1,12 +1,22 @@
 import { replace } from 'connected-react-router';
 import { REHYDRATE } from 'redux-persist';
-import { all, call, put, select, spawn, take, takeLatest } from 'redux-saga/effects'
+import { all, call, put, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import BridgeAPI from '../api/bridge';
 import * as account from './account';
 import { logoutProcedure, updateBalances } from './accountSagas';
 import { IReduxState } from './configureStore';
 import * as transfer from './transfer';
-import { depositProcedure, getTxHashFromPath, initDepositProcedure, isDepositPath, isWithdrawalPath, withdrawProcedure } from './transferSagas';
+import {
+  collectSignature,
+  depositProcedure,
+  getTxHashFromPath,
+  initDepositProcedure,
+  initWithdrawProcedure,
+  isDepositPath,
+  isWithdrawalPath,
+  withdrawProcedure
+} from "./transferSagas";
+import { eventFilter } from './utils';
 
 // Login Flow
 export default function* rootSaga() {
@@ -31,6 +41,7 @@ export default function* rootSaga() {
   try {
     bridge = new BridgeAPI(mnemonic);
     yield call(bridge.setup);
+    yield put(account.setAddress(bridge.account));
   } catch (err) {
     console.error(err);
     return;
@@ -44,7 +55,8 @@ export default function* rootSaga() {
       yield spawn(initDepositProcedure, bridge, txHash);
     }
     if (isWithdrawalPath(initialPath)) {
-      console.log('withdraw')
+      yield put(transfer.newWithdraw("0"));
+      yield spawn(initWithdrawProcedure, bridge, txHash);
     }
   } else {
     // Bridge setup done -> go home 
@@ -56,6 +68,9 @@ export default function* rootSaga() {
     takeLatest(transfer.REQUEST_DEPOSIT, depositProcedure(bridge)),
     takeLatest(transfer.REQUEST_WITHDRAW, withdrawProcedure(bridge)),
     takeLatest(account.LOGOUT, logoutProcedure),
+    takeEvery(eventFilter(transfer.FOREIGN_BRIDGE_EVENT, 'MintRequestSigned'), collectSignature),
+    takeEvery(eventFilter(transfer.FOREIGN_BRIDGE_EVENT, 'WithdrawRequestSigned'), collectSignature),
+    takeLatest(account.REQUEST_HOME_ETH_BALANCE, () => updateBalances(bridge)),
   ]);
 
 

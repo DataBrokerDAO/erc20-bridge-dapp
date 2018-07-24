@@ -1,6 +1,6 @@
 import { replace } from "connected-react-router";
 import { delay } from "redux-saga";
-import { call, cancel, fork, put, select, spawn, take, takeEvery } from "redux-saga/effects";
+import { call, cancel, fork, put, select, spawn, take } from "redux-saga/effects";
 import { EventLog } from "../../node_modules/web3/types";
 import BridgeAPI from "../api/bridge";
 import { setHomeEthBalance } from "./account";
@@ -8,12 +8,13 @@ import { updateBalances } from "./accountSagas";
 import { IReduxState } from "./configureStore";
 import {
     addSignature,
-    CONTINUE_WITHDRAW,
+    CONFIRM_WITHDRAW,
     DEPOSIT_PROCEDURE_SUCCESS,
     DepositSteps,
     FOREIGN_BRIDGE_EVENT,
     IEventAction,
     newDeposit,
+    newWithdraw,
     setAmount,
     setCurrentStep,
     setEstimateWithdrawGas,
@@ -23,7 +24,7 @@ import {
 } from "./transfer";
 import { eventFilter, IAction } from "./utils";
 
-function* collectSignature(action: IEventAction) {
+export function* collectSignature(action: IEventAction) {
     const { _v, _r, _s } = action.payload.returnValues;
     if (_v) {
         yield put(addSignature({ v: _v, r: _r, s: _s }));
@@ -52,7 +53,7 @@ export function isDepositPath(pathname: string) {
 }
 
 export function isWithdrawalPath(pathname: string) {
-    return /withdrawal/.test(pathname);
+    return /withdraw/.test(pathname);
 }
 
 
@@ -71,22 +72,18 @@ export const depositProcedure = (bridge: BridgeAPI) => function* (action: IActio
 export function* initDepositProcedure(bridge: BridgeAPI, txHash: string) {
     yield put(replace(`/deposit/${txHash}`));
 
-    const tx = yield call(bridge.getTransferToForeign, txHash);
-    if (!tx) {
+    const { tx, amount } = yield call(bridge.getTransferToForeign, txHash);
+    if (!tx || !amount) {
         console.error("Transaction:", txHash, "not found");
         return;
     }
+    yield put(setAmount(amount));
 
-    if (tx.tokenValue) {
-        yield put(setAmount(tx.tokenValue));
-    }
     const requiredValidators = yield call(bridge.getRequiredValidators);
     yield put(setRequiredSignatureCount(requiredValidators));
 
     yield put(setCurrentStep(DepositSteps.Sent));
     const eventListener = yield fork(watchForeignBridgeEvents, bridge, txHash);
-
-    yield takeEvery(eventFilter(FOREIGN_BRIDGE_EVENT, 'WithdrawRequestSigned'), collectSignature);
 
     yield take(eventFilter(FOREIGN_BRIDGE_EVENT, 'MintRequestExecuted'));
 
@@ -102,17 +99,31 @@ export function* initDepositProcedure(bridge: BridgeAPI, txHash: string) {
 
 export const withdrawProcedure = (bridge: BridgeAPI) => function* (action: IAction) {
     const { amount } = action.payload;
+    yield put(newWithdraw(amount));
 
-    yield put(replace('/pending'));
+    yield put(replace('/withdraw/'));
 
     const tx = yield call(bridge.tranferToHome, amount);
+
+    yield spawn(initWithdrawProcedure, bridge, tx.transactionHash);
+    return 0;
+}
+
+export function* initWithdrawProcedure(bridge: BridgeAPI, txHash: string) {
+    yield put(replace(`/withdraw/${txHash}`));
+
+    const { tx, amount } = yield call(bridge.getTransferToHome, txHash);
+    if (!tx || !amount) {
+        console.error("Transaction:", txHash, "not found");
+        return;
+    }
+    yield put(setAmount(amount));
 
     const requiredValidators = yield call(bridge.getRequiredValidators);
     yield put(setRequiredSignatureCount(requiredValidators));
 
     yield put(setCurrentStep(WithdrawalSteps.Sent));
-
-    yield takeEvery(eventFilter(FOREIGN_BRIDGE_EVENT, 'WithdrawRequestSigned'), collectSignature);
+    const eventListener = yield fork(watchForeignBridgeEvents, bridge, txHash);
 
     yield take(eventFilter(FOREIGN_BRIDGE_EVENT, 'WithdrawRequestGranted'));
 
@@ -127,18 +138,18 @@ export const withdrawProcedure = (bridge: BridgeAPI) => function* (action: IActi
 
     yield put(setCurrentStep(WithdrawalSteps.Signed));
 
-    yield take(CONTINUE_WITHDRAW);
+    yield take(CONFIRM_WITHDRAW);
     yield put(setCurrentStep(WithdrawalSteps.Withdrawing))
 
     yield call(bridge.sendWithdraw, withdrawCall);
-
-    yield call(delay, 1000);
 
     yield put(setCurrentStep(WithdrawalSteps.Received))
 
     yield put({ type: WITHDRAW_PROCEDURE_SUCCESS })
 
     yield spawn(updateBalances, bridge);
+
+    yield cancel(eventListener);
 
     return 0;
 }

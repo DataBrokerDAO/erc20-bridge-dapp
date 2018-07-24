@@ -2,35 +2,67 @@ import React, { Component } from 'react';
 
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
-import { continueWithdraw } from 'src/redux/transfer';
+import { requestHomeEthBalance } from 'src/redux/account';
+import { confirmWithdraw, ITransferState } from 'src/redux/transfer';
+import { IAccountState } from '../../../redux/account';
 
-class WithdrawStep extends Component<any> {
-    public render() {
-        const { transfer, account } = this.props;
-        const estimateGas = new BigNumber(transfer.estimateWithdrawGas, 10);
-        const homeBalance = new BigNumber(account.homeEthBalance, 10);
-        const hasEnoughEth = homeBalance.minus(estimateGas).isPositive();
+class WithdrawStep extends Component<{
+  transfer: ITransferState;
+  account: IAccountState;
+  confirmWithdraw: any;
+  requestHomeEthBalance: any;
+}> {
+  public render() {
+    const { transfer, account } = this.props;
+    const estimateGas = new BigNumber(transfer.estimateWithdrawGas, 10);
+    const homeBalance = new BigNumber(account.homeEthBalance, 10);
+    const difference = homeBalance.minus(estimateGas);
+    const hasEnoughEth = !difference.isPositive();
 
-        return (
-            <div className="Step WithdrawStep">
-                <h5 className="text-muted font-weight-light">Your funds are ready to be withdrawed !</h5>
-                <p className="mt-3">Withdrawing funds to the Main network costs Gas.</p>
+    return (
+      <div className="Step WithdrawStep">
+        <h5 className="text-muted font-weight-light">
+          Your funds are ready to be withdrawed !
+        </h5>
+        <p className="mt-3">Withdrawing funds to the Main network costs Gas.</p>
 
-                {hasEnoughEth
-                    ? (
-                        <p className="text-success">You have enough funds to complete the transaction.</p>
-                    ) : (
-                        <p className="text-danger">Your balance is too low. You have <code>{homeBalance.toString(10)}</code> Wei.</p>
-                    )}
-                <p className={hasEnoughEth ? "text-success" : "text-danger"}>Estimate Gas cost is <code>{estimateGas.toString(10)}</code> Wei.</p>
+        {hasEnoughEth ? (
+          <div>
+            <p className="text-success">
+              You have enough funds to complete the transaction.
+            </p>
+            <p>
+              Estimate Gas cost is <code>{estimateGas.toString(10)}</code> Wei.
+            </p>
+          </div>
+        ) : ([
+          <p key="1" className="text-danger">
+            The transaction cost is <code>{estimateGas.toString(10)}</code>
+            Wei but you only have <code>{account.homeEthBalance}</code> Wei.
+          </p>,
+          <p key="2">
+            Transfer funds to your account and Check funds. You can close this page and come back later.
+          </p>
+        ])}
 
-                <button onClick={this.props.continueWithdraw} disabled={!hasEnoughEth} className="btn btn-primary btn-lg mt-4">Withdraw</button>
-            </div>
-        );
-    }
+        {hasEnoughEth ? (
+          <button
+            onClick={this.props.confirmWithdraw}
+            className="btn btn-primary btn-lg mt-4"
+          >
+            Confirm
+            </button>
+        ) : (
+            <button
+              className="btn btn-primary btn-lg mx-2"
+              onClick={this.props.requestHomeEthBalance}>Check funds</button>
+          )}
+      </div>
+    );
+  }
 }
 export default connect(
-    undefined,
-    // ({ transfer }: IReduxState) => ({ transfer }),
-    { continueWithdraw }
+  undefined,
+  // ({ transfer }: IReduxState) => ({ transfer }),
+  { confirmWithdraw, requestHomeEthBalance }
 )(WithdrawStep);

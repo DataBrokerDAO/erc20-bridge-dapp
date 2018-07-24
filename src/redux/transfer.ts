@@ -25,7 +25,7 @@ export const SET_CURRENT_STEP = ctx('SET_CURRENT_STEP');
 export const SET_REQUIRED_SIGNATURE_COUNT = ctx('SET_REQUIRED_SIGNATURE_COUNT');
 export const ADD_SIGNATURE = ctx('ADD_SIGNATURE');
 export const SET_ESTIMATE_WITHDRAW_GAS = ctx('SET_ESTIMATE_WITHDRAW_GAS');
-export const CONTINUE_WITHDRAW = ctx('CONTINUE_WITHDRAW');
+export const CONFIRM_WITHDRAW = ctx('CONFIRM_WITHDRAW');
 export const SET_AMOUNT = ctx('SET_AMOUNT');
 
 /**
@@ -69,7 +69,6 @@ export interface ITransferState {
     currentStep?: DepositSteps | WithdrawalSteps,
     amount: string,
     requiredSignatureCount: number,
-    signatureCount: number,
     signatures: ISignature[],
     estimateWithdrawGas: string,
 }
@@ -78,7 +77,6 @@ const initialState: ITransferState = {
     status: TransferStatus.None,
     amount: '0',
     requiredSignatureCount: 0,
-    signatureCount: 0,
     estimateWithdrawGas: '0',
     signatures: []
 }
@@ -87,12 +85,12 @@ const startedReducer = (type: TransferType, currentStep: DepositSteps | Withdraw
     (state: ITransferState, { amount }: any) =>
         ({ ...initialState, status: TransferStatus.Pending, amount, type, currentStep })
 
-function successReducer(status: ITransferState) {
-    return { ...status, status: TransferStatus.Success };
+function successReducer() {
+    return initialState;
 }
 
-function failureReducer(status: ITransferState) {
-    return { ...status, status: TransferStatus.Failure };
+function failureReducer(state: ITransferState) {
+    return { ...state, status: TransferStatus.Failure };
 }
 
 export const reducer = createReducer<ITransferState>({
@@ -120,7 +118,6 @@ export const reducer = createReducer<ITransferState>({
     [ADD_SIGNATURE]: (state, { signature }) => ({
         ...state,
         signatures: signature ? [...state.signatures, signature] : state.signatures,
-        signatureCount: state.signatureCount + 1
     }),
     [SET_ESTIMATE_WITHDRAW_GAS]: (state, { estimateWithdrawGas }) => ({
         ...state,
@@ -167,8 +164,8 @@ export const setEstimateWithdrawGas = (estimateWithdrawGas: string) => ({
     payload: { estimateWithdrawGas }
 });
 
-export const continueWithdraw = () => ({
-    type: CONTINUE_WITHDRAW,
+export const confirmWithdraw = () => ({
+    type: CONFIRM_WITHDRAW,
 });
 
 export const addSignature = (signature?: ISignature) => ({
