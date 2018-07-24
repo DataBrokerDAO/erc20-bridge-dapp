@@ -1,4 +1,4 @@
-import { connectRouter, routerMiddleware } from 'connected-react-router'
+import { connectRouter, routerMiddleware, RouterState } from 'connected-react-router'
 import { History } from 'history'
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
@@ -12,7 +12,8 @@ import { ITransferState, reducer as transferReducer } from './transfer';
 
 export interface IReduxState {
   account: IAccountState,
-  transfer: ITransferState
+  transfer: ITransferState,
+  router: RouterState
 }
 
 const rootReducer = combineReducers({

@@ -5,10 +5,12 @@ import * as account from './account';
 import { updateBalances } from './accountSagas';
 import { IReduxState } from './configureStore';
 import * as transfer from './transfer';
-import { depositProcedure, listenForForeignBridgeEvents, withdrawProcedure } from './transferSagas';
+import { depositProcedure, getTxHashFromPath, initDepositProcedure, isDepositPath, isWithdrawalPath, withdrawProcedure } from './transferSagas';
 
 // Login Flow
 export default function* rootSaga() {
+  const initialPath: string = yield select((s: IReduxState) => s.router.location.pathname);
+
   let mnemonic: string = yield select((s: IReduxState) => s.account.mnemonic);
 
   if (mnemonic) {
@@ -31,15 +33,25 @@ export default function* rootSaga() {
     return;
   }
 
-  // Bridge setup done -> go home 
-  yield put(replace('/'))
-  yield spawn(updateBalances, bridge);
-
-  yield spawn(listenForForeignBridgeEvents, bridge);
+  // User opened a pending transfer
+  const txHash = getTxHashFromPath(initialPath);
+  if (txHash) {
+    if (isDepositPath(initialPath)) {
+      yield put(transfer.newDeposit("0"));
+      yield spawn(initDepositProcedure, bridge, txHash);
+    }
+    if (isWithdrawalPath(initialPath)) {
+      console.log('withdraw')
+    }
+  } else {
+    // Bridge setup done -> go home 
+    yield put(replace('/'))
+    yield spawn(updateBalances, bridge);
+  }
 
   yield all([
-    takeLatest(transfer.START_DEPOSIT_PROCEDURE, depositProcedure(bridge)),
-    takeLatest(transfer.START_WITHDRAW_PROCEDURE, withdrawProcedure(bridge)),
+    takeLatest(transfer.REQUEST_DEPOSIT, depositProcedure(bridge)),
+    takeLatest(transfer.REQUEST_WITHDRAW, withdrawProcedure(bridge)),
   ]);
 
 

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
 import { IAccountState } from '../../redux/account';
-import { startDepositProcedure, startWithdrawProcedure } from '../../redux/transfer';
+import { requestDeposit, requestWithdraw } from '../../redux/transfer';
 
 import { IReduxState } from '../../redux/configureStore';
 
@@ -46,13 +46,13 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
 
   public handleWithdrawal = () => {
     if (this.state.amountInput.length) {
-      this.props.startWithdrawProcedure(this.state.amountInput);
+      this.props.requestWithdraw(this.state.amountInput);
     }
   }
 
   public handleDeposit = () => {
     if (this.state.amountInput.length) {
-      this.props.startDepositProcedure(this.state.amountInput);
+      this.props.requestDeposit(this.state.amountInput);
     }
   }
   public handleAmountChange = (evt: any) => {
@@ -127,7 +127,7 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
 export default connect(
   (s: IReduxState) => ({ account: s.account }),
   {
-    startDepositProcedure,
-    startWithdrawProcedure
+    requestDeposit,
+    requestWithdraw
   }
 )(StartTransferPage);

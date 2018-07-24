@@ -8,11 +8,15 @@ import { createContext, createReducer } from './utils';
  */
 export const ctx = createContext('transfer');
 
-export const START_DEPOSIT_PROCEDURE = ctx('START_DEPOSIT_PROCEDURE');
+export const REQUEST_DEPOSIT = ctx('REQUEST_DEPOSIT');
+export const NEW_DEPOSIT = ctx('NEW_DEPOSIT');
+
 export const DEPOSIT_PROCEDURE_SUCCESS = ctx('DEPOSIT_PROCEDURE_SUCCESS');
 export const DEPOSIT_PROCEDURE_FAILURE = ctx('DEPOSIT_PROCEDURE_FAILURE');
 
-export const START_WITHDRAW_PROCEDURE = ctx('START_WITHDRAW_PROCEDURE');
+export const REQUEST_WITHDRAW = ctx('REQUEST_WITHDRAW');
+export const NEW_WITHDRAW = ctx('NEW_WITHDRAW');
+
 export const WITHDRAW_PROCEDURE_SUCCESS = ctx('WITHDRAW_PROCEDURE_SUCCESS');
 export const WITHDRAW_PROCEDURE_FAILURE = ctx('WITHDRAW_PROCEDURE_FAILURE');
 
@@ -22,6 +26,7 @@ export const SET_REQUIRED_SIGNATURE_COUNT = ctx('SET_REQUIRED_SIGNATURE_COUNT');
 export const ADD_SIGNATURE = ctx('ADD_SIGNATURE');
 export const SET_ESTIMATE_WITHDRAW_GAS = ctx('SET_ESTIMATE_WITHDRAW_GAS');
 export const CONTINUE_WITHDRAW = ctx('CONTINUE_WITHDRAW');
+export const SET_AMOUNT = ctx('SET_AMOUNT');
 
 /**
  * Reducer
@@ -91,8 +96,12 @@ function failureReducer(status: ITransferState) {
 }
 
 export const reducer = createReducer<ITransferState>({
-    [START_DEPOSIT_PROCEDURE]: startedReducer(TransferType.Deposit, DepositSteps.Init),
-    [START_WITHDRAW_PROCEDURE]: startedReducer(TransferType.Withdrawal, WithdrawalSteps.Init),
+    [NEW_DEPOSIT]: startedReducer(TransferType.Deposit, DepositSteps.Init),
+    [NEW_WITHDRAW]: startedReducer(TransferType.Withdrawal, WithdrawalSteps.Init),
+    [SET_AMOUNT]: (state, { amount }) => ({
+        ...state,
+        amount
+    }),
 
     [WITHDRAW_PROCEDURE_SUCCESS]: successReducer,
     [DEPOSIT_PROCEDURE_SUCCESS]: successReducer,
@@ -123,13 +132,23 @@ export const reducer = createReducer<ITransferState>({
  * Actions
  */
 
-export const startDepositProcedure = (amount: string) => ({
-    type: START_DEPOSIT_PROCEDURE,
+export const requestDeposit = (amount: string) => ({
+    type: REQUEST_DEPOSIT,
     payload: { amount }
 });
 
-export const startWithdrawProcedure = (amount: string) => ({
-    type: START_WITHDRAW_PROCEDURE,
+export const requestWithdraw = (amount: string) => ({
+    type: REQUEST_WITHDRAW,
+    payload: { amount }
+});
+
+export const newDeposit = (amount: string) => ({
+    type: NEW_DEPOSIT,
+    payload: { amount }
+});
+
+export const newWithdraw = (amount: string) => ({
+    type: NEW_WITHDRAW,
     payload: { amount }
 });
 
@@ -155,4 +174,9 @@ export const continueWithdraw = () => ({
 export const addSignature = (signature?: ISignature) => ({
     type: ADD_SIGNATURE,
     payload: { signature }
+});
+
+export const setAmount = (amount: string) => ({
+    type: SET_AMOUNT,
+    payload: { amount }
 });

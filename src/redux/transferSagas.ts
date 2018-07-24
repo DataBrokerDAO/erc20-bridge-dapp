@@ -1,7 +1,6 @@
 import { replace } from "connected-react-router";
-import { AnyAction } from "redux";
 import { delay } from "redux-saga";
-import { call, put, select, spawn, take, takeEvery } from "redux-saga/effects";
+import { call, cancel, fork, put, select, spawn, take, takeEvery } from "redux-saga/effects";
 import { EventLog } from "../../node_modules/web3/types";
 import BridgeAPI from "../api/bridge";
 import { setHomeEthBalance } from "./account";
@@ -14,26 +13,15 @@ import {
     DepositSteps,
     FOREIGN_BRIDGE_EVENT,
     IEventAction,
+    newDeposit,
+    setAmount,
     setCurrentStep,
     setEstimateWithdrawGas,
     setRequiredSignatureCount,
     WITHDRAW_PROCEDURE_SUCCESS,
-    WithdrawalSteps
+    WithdrawalSteps,
 } from "./transfer";
-import { IAction } from "./utils";
-
-const eventFilter = (eventName: string, filter = {}) => (action: AnyAction) => {
-    if (action.type !== FOREIGN_BRIDGE_EVENT) {
-        return false;
-    }
-    const { payload } = (action as IEventAction);
-    if (payload.event !== eventName) {
-        return false;
-    }
-    const filterMatches = !Object.keys(filter)
-        .find(key => filter[key] !== payload.returnValues[key])
-    return filterMatches;
-}
+import { eventFilter, IAction } from "./utils";
 
 function* collectSignature(action: IEventAction) {
     const { _v, _r, _s } = action.payload.returnValues;
@@ -45,30 +33,70 @@ function* collectSignature(action: IEventAction) {
     return 0;
 }
 
+export function getTxHashFromPath(pathname: string) {
+    if (!isDepositPath(pathname) && !isWithdrawalPath(pathname)) {
+        return false;
+    }
+
+    const paths = pathname.split("/").slice(1);
+    const txHash = paths[1];
+
+    if (txHash && /^0x([A-Fa-f0-9]{64})$/.test(txHash)) {
+        return txHash;
+    }
+    return false;
+}
+
+export function isDepositPath(pathname: string) {
+    return /deposit/.test(pathname);
+}
+
+export function isWithdrawalPath(pathname: string) {
+    return /withdrawal/.test(pathname);
+}
+
+
 export const depositProcedure = (bridge: BridgeAPI) => function* (action: IAction) {
     const { amount } = action.payload;
+    yield put(newDeposit(amount));
 
-    yield put(replace('/pending'));
+    yield put(replace('/deposit/'));
 
     const tx = yield call(bridge.tranferToForeign, amount);
-    const filter = { _transactionHash: tx.transactionHash };
 
+    yield spawn(initDepositProcedure, bridge, tx.transactionHash);
+    return 0;
+}
+
+export function* initDepositProcedure(bridge: BridgeAPI, txHash: string) {
+    yield put(replace(`/deposit/${txHash}`));
+
+    const tx = yield call(bridge.getTransferToForeign, txHash);
+    if (!tx) {
+        console.error("Transaction:", txHash, "not found");
+        return;
+    }
+
+    if (tx.tokenValue) {
+        yield put(setAmount(tx.tokenValue));
+    }
     const requiredValidators = yield call(bridge.getRequiredValidators);
     yield put(setRequiredSignatureCount(requiredValidators));
 
     yield put(setCurrentStep(DepositSteps.Sent));
+    const eventListener = yield fork(watchForeignBridgeEvents, bridge, txHash);
 
-    yield takeEvery(eventFilter('WithdrawRequestSigned', filter), collectSignature);
+    yield takeEvery(eventFilter(FOREIGN_BRIDGE_EVENT, 'WithdrawRequestSigned'), collectSignature);
 
-    yield take(eventFilter('MintRequestExecuted', filter));
-
-    yield call(delay, 5000);
+    yield take(eventFilter(FOREIGN_BRIDGE_EVENT, 'MintRequestExecuted'));
 
     yield put(setCurrentStep(DepositSteps.Minted))
 
     yield put({ type: DEPOSIT_PROCEDURE_SUCCESS })
 
     yield spawn(updateBalances, bridge);
+
+    yield cancel(eventListener);
     return 0;
 }
 
@@ -78,16 +106,15 @@ export const withdrawProcedure = (bridge: BridgeAPI) => function* (action: IActi
     yield put(replace('/pending'));
 
     const tx = yield call(bridge.tranferToHome, amount);
-    const filter = { _transactionHash: tx.transactionHash };
 
     const requiredValidators = yield call(bridge.getRequiredValidators);
     yield put(setRequiredSignatureCount(requiredValidators));
 
     yield put(setCurrentStep(WithdrawalSteps.Sent));
 
-    yield takeEvery(eventFilter('WithdrawRequestSigned', filter), collectSignature);
+    yield takeEvery(eventFilter(FOREIGN_BRIDGE_EVENT, 'WithdrawRequestSigned'), collectSignature);
 
-    yield take(eventFilter('WithdrawRequestGranted', filter));
+    yield take(eventFilter(FOREIGN_BRIDGE_EVENT, 'WithdrawRequestGranted'));
 
     const signatures = yield select((s: IReduxState) => s.transfer.signatures);
     const withdrawCall = bridge.getWithdrawCall(amount, tx.blockNumber, signatures);
@@ -116,10 +143,10 @@ export const withdrawProcedure = (bridge: BridgeAPI) => function* (action: IActi
     return 0;
 }
 
-export function* listenForForeignBridgeEvents(bridge: BridgeAPI) {
-    let blockNum;
+function* watchForeignBridgeEvents(bridge: BridgeAPI, txHash: string) {
+    let blockNum = 0;
     while (true) {
-        const events: EventLog[] = yield call(bridge.pollForEvents, blockNum);
+        const events: EventLog[] = yield call(bridge.pollForEvents, blockNum, { _transactionHash: txHash });
         for (const evt of events) {
             if (!blockNum || evt.blockNumber >= blockNum) {
                 blockNum = evt.blockNumber + 1;

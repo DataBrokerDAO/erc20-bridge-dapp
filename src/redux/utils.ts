@@ -1,4 +1,5 @@
 import { AnyAction } from 'redux';
+import { IEventAction } from './transfer';
 
 type Payload = any;
 
@@ -21,3 +22,16 @@ export function createReducer <State>(actionMap: IActionMap<State>, initialState
 }
 
 export const createContext = (ctx: string) => (type: string) => ctx + '/' + type;
+
+export const eventFilter = (actionType: string, eventName: string, filter = {}) => (action: AnyAction) => {
+    if (action.type !== actionType) {
+        return false;
+    }
+    const { payload } = (action as IEventAction);
+    if (payload.event !== eventName) {
+        return false;
+    }
+    const filterMatches = !Object.keys(filter)
+        .find(key => filter[key] !== payload.returnValues[key])
+    return filterMatches;
+}

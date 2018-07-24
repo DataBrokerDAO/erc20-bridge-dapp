@@ -1,7 +1,7 @@
 export const timeout = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
 
-const matchesFilter = (evt: any, filter: object) =>
+export const matchesFilter = (evt: any, filter: object) =>
   !Object.keys(filter).find(key => evt.returnValues[key] !== filter[key]);
 
 export async function pollForEvents(

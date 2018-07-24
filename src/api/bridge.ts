@@ -9,6 +9,7 @@ import * as SampleERC20 from '@settlemint/erc20-bridge/build/contracts/SampleERC
 import BigNumber from '../../node_modules/bignumber.js';
 import { EventLog } from '../../node_modules/web3/types';
 import getConfig from './config';
+import { matchesFilter } from './utils';
 
 export interface ISignature {
   v: string;
@@ -45,6 +46,10 @@ export default class BridgeAPI {
     this.estimateWithdrawGas = this.estimateWithdrawGas.bind(this);
     this.sendWithdraw = this.sendWithdraw.bind(this);
     this.getHomeBalance = this.getHomeBalance.bind(this);
+    this.getTransferToForeign = this.getTransferToForeign.bind(this);
+    this.getTransferToHome = this.getTransferToHome.bind(this);
+    this.getHomeBlock = this.getHomeBlock.bind(this);
+    this.getForeignBlock = this.getForeignBlock.bind(this);
   }
 
   public async setup() {
@@ -78,6 +83,14 @@ export default class BridgeAPI {
     return await this.home3.eth.getBalance(this.account);
   }
 
+  public async getHomeBlock() {
+    return await this.home3.eth.getBlockNumber();
+  }
+
+  public async getForeignBlock() {
+    return await this.foreign3.eth.getBlockNumber();
+  }
+
   public async getRequiredValidators() {
     const num: number = await this.foreignBridge.methods.requiredValidators().call({ from: this.account });
     return num;
@@ -85,13 +98,16 @@ export default class BridgeAPI {
 
   public async pollForEvents(blockNumber?: number, filter?: object) {
     if (blockNumber === undefined) {
-      blockNumber = await this.foreign3.eth.getBlockNumber();
+      blockNumber = await this.getForeignBlock();
     }
-    const events: EventLog[] = await this.foreignBridge.getPastEvents('allEvents', {
+    let events: EventLog[] = await this.foreignBridge.getPastEvents('allEvents', {
       fromBlock: blockNumber,
       toBlock: 'latest',
       filter
     });
+    if (filter) {
+      events = events.filter(evt => matchesFilter(evt, filter));
+    }
     return events;
   }
 
@@ -124,6 +140,24 @@ export default class BridgeAPI {
       .send({ from: this.account });
 
     return tx;
+  }
+
+  public async getTransferToForeign(txHash: string) {
+    const tx = await this.home3.eth.getTransaction(txHash);
+    tx.events = await this.homeToken.getPastEvents('Transfer', {
+      fromBlock: tx.blockNumber,
+      toBlock: tx.blockNumber,
+    })
+    tx.events = tx.events.filter((evt: EventLog) =>
+      evt.returnValues.from === this.account);
+    if (tx.events.length) {
+      tx.tokenValue = tx.events[0].returnValues.value;
+    }
+    return tx;
+  }
+
+  public async getTransferToHome(txHash: string) {
+    return await this.foreign3.eth.getTransaction(txHash);
   }
 
   public getWithdrawCall(amount: string, withdrawBlock: number, signatures: ISignature[]) {
