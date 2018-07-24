@@ -3,6 +3,8 @@ import { History } from 'history'
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { createLogger } from 'redux-logger';
+import { persistReducer, persistStore } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 import createSagaMiddleware from 'redux-saga';
 
 import rootSaga from './rootSaga';
@@ -34,9 +36,19 @@ export default function configureStore(initialState = {}, history: History) {
     applyMiddleware(...middleware)
   )(createStore);
 
-  const reducer = connectRouter(history)(rootReducer);
+  const persistConfig = {
+    key: 'root',
+    whitelist: ['account'],
+    storage,
+  }
+
+  let reducer = persistReducer(persistConfig, rootReducer);
+  reducer = connectRouter(history)(reducer);
 
   const store = createStoreWithMiddleware(reducer, initialState);
+
+  const persistor = persistStore(store)
+
   sagaMiddleware.run(rootSaga);
-  return store;
+  return { store, persistor };
 }

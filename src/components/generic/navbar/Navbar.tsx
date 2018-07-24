@@ -1,26 +1,42 @@
 import React, { Component } from 'react';
 
+import { connect } from 'react-redux';
+import { logout, selectIsLoggedIn } from 'src/redux/account';
+import { IReduxState } from 'src/redux/configureStore';
+
 import NavbarLogo from './NavbarLogo';
 
 import './Navbar.css';
 
-class Navbar extends Component<
-  { logo: string },
-  any
-  > {
+class NavBar extends Component<{
+  logo: string;
+  logout: any;
+  loggedIn: boolean;
+}> {
   public render() {
-    const { logo } = this.props;
-
     return (
-      <nav
-        className="navbar navbar-expand-lg navbar-light"
-      >
+      <nav className="navbar navbar-expand-lg navbar-dark">
         <div className="container">
-          <NavbarLogo src={logo} size={35} url="/" />
+          <NavbarLogo src={this.props.logo} size={35} url="/" />
+
+          <ul className="navbar-nav">
+            <li className="nav-item">
+              {this.props.loggedIn && (
+                <button className="nav-link" onClick={this.props.logout}>
+                  Logout
+              </button>
+              )}
+            </li>
+          </ul>
         </div>
       </nav>
     );
   }
 }
 
-export default Navbar;
+export default connect(
+  (s: IReduxState) => ({ loggedIn: selectIsLoggedIn(s) }),
+  {
+    logout
+  }
+)(NavBar);

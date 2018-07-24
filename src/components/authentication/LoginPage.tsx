@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 // import * as Redux from 'redux';
 
 import { connect } from 'react-redux';
-import { setMnemonic } from '../../redux/account';
+import { login } from '../../redux/account';
 // import { IReduxState } from '../../redux/configureStore';
 
 import Container from '../generic/Container';
 
 import './Authentication.css';
 
-class LoginForm extends Component<{ setMnemonic: any }> {
+class LoginForm extends Component<{ login: any }> {
 
   public state = {
     mnemonic: ''
@@ -47,7 +47,7 @@ class LoginForm extends Component<{ setMnemonic: any }> {
 
   private handleSubmit = (evt: any) => {
     evt.preventDefault();
-    this.props.setMnemonic(this.state.mnemonic);
+    this.props.login(this.state.mnemonic);
   }
 
 }
@@ -55,6 +55,6 @@ class LoginForm extends Component<{ setMnemonic: any }> {
 export default connect(
   undefined,
   {
-    setMnemonic
+    login
   }
 )(LoginForm);

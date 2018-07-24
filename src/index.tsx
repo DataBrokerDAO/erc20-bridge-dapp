@@ -11,7 +11,7 @@ import configureStore from './redux/configureStore';
 import * as serviceWorker from './serviceWorker';
 
 const history = createBrowserHistory();
-const store = configureStore({}, history); // If there is state on the server, store will be configured with that, otherwise with empty state.
+const { store, persistor } = configureStore({}, history); // If there is state on the server, store will be configured with that, otherwise with empty state.
 
 // Wait for document to load all chunks.
 window.onload = () => {
@@ -24,7 +24,7 @@ window.onload = () => {
     ReactDOM[renderOrHydrate](
       <ReduxProvider store={store}>
         <ConnectedRouter history={history}>
-          <App />
+          <App persistor={persistor} />
         </ConnectedRouter>
       </ReduxProvider>,
       document.getElementById('root')

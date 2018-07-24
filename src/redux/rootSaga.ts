@@ -1,8 +1,9 @@
 import { replace } from 'connected-react-router';
+import { REHYDRATE } from 'redux-persist';
 import { all, call, put, select, spawn, take, takeLatest } from 'redux-saga/effects'
 import BridgeAPI from '../api/bridge';
 import * as account from './account';
-import { updateBalances } from './accountSagas';
+import { logoutProcedure, updateBalances } from './accountSagas';
 import { IReduxState } from './configureStore';
 import * as transfer from './transfer';
 import { depositProcedure, getTxHashFromPath, initDepositProcedure, isDepositPath, isWithdrawalPath, withdrawProcedure } from './transferSagas';
@@ -11,14 +12,16 @@ import { depositProcedure, getTxHashFromPath, initDepositProcedure, isDepositPat
 export default function* rootSaga() {
   const initialPath: string = yield select((s: IReduxState) => s.router.location.pathname);
 
+  yield take(REHYDRATE);
+
   let mnemonic: string = yield select((s: IReduxState) => s.account.mnemonic);
 
   if (mnemonic) {
     console.log('already logged in')
   } else {
-    yield put(replace('/authenticate/login'))
+    yield put(replace('/login'))
 
-    const action = yield take(account.SET_MNEMONIC);
+    const action = yield take(account.LOGIN);
     mnemonic = action.payload.mnemonic;
     console.log('logged in')
   }
@@ -52,6 +55,7 @@ export default function* rootSaga() {
   yield all([
     takeLatest(transfer.REQUEST_DEPOSIT, depositProcedure(bridge)),
     takeLatest(transfer.REQUEST_WITHDRAW, withdrawProcedure(bridge)),
+    takeLatest(account.LOGOUT, logoutProcedure),
   ]);
 
 

@@ -1,5 +1,17 @@
 .navbar {
+  z-index: 1000;
+
   .img {
     margin: 7px 0;
+  }
+
+  .nav-link {
+    color: white !important;
+    font-weight: bold;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: inherit;
   }
 }
