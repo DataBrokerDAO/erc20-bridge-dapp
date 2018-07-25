@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 import { ConnectedRouter } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
 import React from 'react';
