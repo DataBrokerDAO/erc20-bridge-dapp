@@ -1,6 +1,6 @@
 import { connectRouter, routerMiddleware, RouterState } from 'connected-react-router'
 import { History } from 'history'
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { applyMiddleware, combineReducers, createStore, Middleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
@@ -25,13 +25,15 @@ const rootReducer = combineReducers({
   pendingTransfers: pendingTransfersReducer
 });
 
-export default function configureStore(initialState = {}, history: History) {
-  const sagaMiddleware = createSagaMiddleware();
+export default function configureStore(initialState = {}, history?: History) {
 
-  const middleware = [
-    sagaMiddleware,
-    routerMiddleware(history),
-  ];
+  const middleware: Middleware[] = [];
+
+  const sagaMiddleware = createSagaMiddleware();
+  if (history) {
+    middleware.push(sagaMiddleware)
+    middleware.push(routerMiddleware(history));
+  }
 
   if (process.env.NODE_ENV === 'development') {
     const { createLogger } = require('redux-logger');
@@ -48,13 +50,18 @@ export default function configureStore(initialState = {}, history: History) {
     storage,
   }
 
-  let reducer = persistReducer(persistConfig, rootReducer);
-  reducer = connectRouter(history)(reducer);
+  let reducer = rootReducer;
+  if (history) {
+    reducer = persistReducer(persistConfig, rootReducer);
+    reducer = connectRouter(history)(reducer);
+  }
 
   const store = createStoreWithMiddleware(reducer, initialState);
 
-  const persistor = persistStore(store)
-
-  sagaMiddleware.run(rootSaga);
-  return { store, persistor };
+  if (history) {
+    const persistor = persistStore(store)
+    sagaMiddleware.run(rootSaga);
+    return { store, persistor };
+  }
+  return { store };
 }

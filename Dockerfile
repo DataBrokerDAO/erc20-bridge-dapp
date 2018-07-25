@@ -13,4 +13,4 @@ RUN apk --update add --no-cache bash && \
   rm -Rf ~/.npm
 COPY . /srv
 EXPOSE 3000
-CMD ["./scripts/start.sh"]
+CMD ["npm", "run", "start:prod"]

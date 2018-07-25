@@ -18,9 +18,16 @@ class LoginForm extends Component<{ login: any }> {
   public render() {
     return (
       <Container className="LoginPage--container" >
+        <ul className="nav nav-pills nav-fill mb-4">
+          <li className="nav-item">
+            <a className="nav-link active" href="#">Mnemonic</a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" href="#">Private Key</a>
+          </li>
+        </ul>
         <form key="form" className="text-left" onSubmit={this.handleSubmit} >
           <div className="form-group">
-            <h4>Enter your mnemonic text</h4>
             <input
               type="text"
               id="mnemonic"

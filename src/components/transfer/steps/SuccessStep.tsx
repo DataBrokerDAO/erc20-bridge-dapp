@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { TransferType } from 'src/redux/transfer';
+import { TransferType } from '../../../redux/transfer';
 import { IProps } from '../PendingTransferPage';
 
 const SuccessStep = ({ account, transfer }: IProps) => (

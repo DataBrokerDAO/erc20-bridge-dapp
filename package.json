@@ -108,6 +108,7 @@
     "build-ts": "tsc --declaration",
     "start-js": "node scripts/start.js",
     "start": "npm-run-all -p watch-css start-js",
+    "start:prod": "NODE_ENV=production npm run build && NODE_ENV=production npm run server",
     "server": "node scripts/server.js",
     "clean": "find ./src -name '*.js' -type f -delete && find ./src -name '*.map' -type f -delete && find ./src -name '*.d.ts' -type f -delete && find ./src -name '*.css' -type f -delete",
     "build": "npm run clean && npm run build-css && node scripts/build.js && node scripts/critical-css.js && npm run build-ts",

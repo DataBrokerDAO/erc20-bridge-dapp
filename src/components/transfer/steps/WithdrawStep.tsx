@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
-import { requestHomeEthBalance } from 'src/redux/account';
-import { confirmWithdraw, ITransferState } from 'src/redux/transfer';
+import { requestHomeEthBalance } from '../../../redux/account';
 import { IAccountState } from '../../../redux/account';
+import { confirmWithdraw, ITransferState } from '../../../redux/transfer';
 
 class WithdrawStep extends Component<{
   transfer: ITransferState;

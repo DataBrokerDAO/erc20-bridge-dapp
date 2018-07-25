@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
-import { logout, selectIsLoggedIn } from 'src/redux/account';
-import { IReduxState } from 'src/redux/configureStore';
+import { logout, selectIsLoggedIn } from '../../../redux/account';
+import { IReduxState } from '../../../redux/configureStore';
 
 import NavbarLogo from './NavbarLogo';
 
