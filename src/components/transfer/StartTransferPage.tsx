@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { IAccountState } from '../../redux/account';
 import { requestDeposit, requestWithdraw } from '../../redux/transfer';
+import PendingTransfers from './PendingTransfers';
 
 import { IReduxState } from '../../redux/configureStore';
 
@@ -86,8 +87,8 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
     const leftSide = this.renderSide("Main Network", withdraw, account.homeBalance, newHomeBalance.toString(10));
     const rightSide = this.renderSide("Databroker Network", !withdraw, account.foreignBalance, newForeignBalance.toString(10));
 
-    return (
-      <div className="row StartTransferPage">
+    return [
+      <div key="startTransferPage" className="row StartTransferPage">
         <div
           className="col-sm d-xs-none d-sm-block"
           style={{ backgroundColor: withdraw ? '#f5f5f5' : undefined }}>
@@ -106,8 +107,9 @@ class StartTransferPage extends Component<{ account: IAccountState, [x: string]:
             disabled={!amountInput.length || !isValidAmount}
             onClick={withdraw ? this.handleWithdrawal : this.handleDeposit} />
         </div>
-      </div>
-    );
+      </div>,
+      <PendingTransfers key="pendingTransfers" />
+    ];
   }
 
   private renderSide = (name: string, receiving = false, balance: string, newBalance: string) => (

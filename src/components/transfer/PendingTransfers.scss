@@ -1,0 +1,11 @@
+.PendingTransfers {
+    position: fixed;
+    bottom: 1rem;
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .list-group-item {
+
+    }
+}

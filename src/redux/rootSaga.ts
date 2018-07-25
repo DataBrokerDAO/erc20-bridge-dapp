@@ -1,10 +1,11 @@
-import { replace } from 'connected-react-router';
+import { LOCATION_CHANGE, replace } from 'connected-react-router';
 import { REHYDRATE } from 'redux-persist';
 import { all, call, put, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import BridgeAPI from '../api/bridge';
 import * as account from './account';
 import { logoutProcedure, updateBalances } from './accountSagas';
 import { IReduxState } from './configureStore';
+import { navigationProcedure } from './navigationSagas';
 import * as transfer from './transfer';
 import {
   collectSignature,
@@ -71,6 +72,7 @@ export default function* rootSaga() {
     takeEvery(eventFilter(transfer.FOREIGN_BRIDGE_EVENT, 'MintRequestSigned'), collectSignature),
     takeEvery(eventFilter(transfer.FOREIGN_BRIDGE_EVENT, 'WithdrawRequestSigned'), collectSignature),
     takeLatest(account.REQUEST_HOME_ETH_BALANCE, () => updateBalances(bridge)),
+    takeEvery(LOCATION_CHANGE, navigationProcedure(bridge))
   ]);
 
 

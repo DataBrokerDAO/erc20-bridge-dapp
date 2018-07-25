@@ -17,7 +17,7 @@ class WithdrawStep extends Component<{
     const estimateGas = new BigNumber(transfer.estimateWithdrawGas, 10);
     const homeBalance = new BigNumber(account.homeEthBalance, 10);
     const difference = homeBalance.minus(estimateGas);
-    const hasEnoughEth = !difference.isPositive();
+    const hasEnoughEth = difference.isPositive();
 
     return (
       <div className="Step WithdrawStep">
@@ -27,7 +27,7 @@ class WithdrawStep extends Component<{
         <p className="mt-3">Withdrawing funds to the Main network costs Gas.</p>
 
         {hasEnoughEth ? (
-          <div>
+          <div className="text-center">
             <p className="text-success">
               You have enough funds to complete the transaction.
             </p>
@@ -35,15 +35,17 @@ class WithdrawStep extends Component<{
               Estimate Gas cost is <code>{estimateGas.toString(10)}</code> Wei.
             </p>
           </div>
-        ) : ([
-          <p key="1" className="text-danger">
-            The transaction cost is <code>{estimateGas.toString(10)}</code>
-            Wei but you only have <code>{account.homeEthBalance}</code> Wei.
-          </p>,
-          <p key="2">
-            Transfer funds to your account and Check funds. You can close this page and come back later.
-          </p>
-        ])}
+        ) : (
+          <div className="text-center">
+            <p className="text-danger">
+              The transaction cost is <code>{estimateGas.toString(10)}</code>
+              Wei but you only have <code>{account.homeEthBalance}</code> Wei.
+            </p>,
+            <p>
+              Transfer funds to your account and Check funds. You can close this page and come back later.
+            </p>
+          </div>
+        )}
 
         {hasEnoughEth ? (
           <button

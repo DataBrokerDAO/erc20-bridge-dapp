@@ -6,6 +6,7 @@ import BridgeAPI from "../api/bridge";
 import { setHomeEthBalance } from "./account";
 import { updateBalances } from "./accountSagas";
 import { IReduxState } from "./configureStore";
+import { addTransfer, removeTransfer } from "./pendingTransfers";
 import {
     addSignature,
     CONFIRM_WITHDRAW,
@@ -19,6 +20,7 @@ import {
     setCurrentStep,
     setEstimateWithdrawGas,
     setRequiredSignatureCount,
+    TransferType,
     WITHDRAW_PROCEDURE_SUCCESS,
     WithdrawalSteps,
 } from "./transfer";
@@ -65,13 +67,13 @@ export const depositProcedure = (bridge: BridgeAPI) => function* (action: IActio
 
     const tx = yield call(bridge.tranferToForeign, amount);
 
-    yield spawn(initDepositProcedure, bridge, tx.transactionHash);
+    yield put(addTransfer(tx.transactionHash, TransferType.Deposit, amount));
+
+    yield put(replace(`/deposit/${tx.transactionHash}`));
     return 0;
 }
 
 export function* initDepositProcedure(bridge: BridgeAPI, txHash: string) {
-    yield put(replace(`/deposit/${txHash}`));
-
     const { tx, amount } = yield call(bridge.getTransferToForeign, txHash);
     if (!tx || !amount) {
         console.error("Transaction:", txHash, "not found");
@@ -93,6 +95,7 @@ export function* initDepositProcedure(bridge: BridgeAPI, txHash: string) {
 
     yield spawn(updateBalances, bridge);
 
+    yield put(removeTransfer(txHash));
     yield cancel(eventListener);
     return 0;
 }
@@ -105,13 +108,13 @@ export const withdrawProcedure = (bridge: BridgeAPI) => function* (action: IActi
 
     const tx = yield call(bridge.tranferToHome, amount);
 
-    yield spawn(initWithdrawProcedure, bridge, tx.transactionHash);
+    yield put(addTransfer(tx.transactionHash, TransferType.Withdrawal, amount));
+
+    yield put(replace(`/withdraw/${tx.transactionHash}`));
     return 0;
 }
 
 export function* initWithdrawProcedure(bridge: BridgeAPI, txHash: string) {
-    yield put(replace(`/withdraw/${txHash}`));
-
     const { tx, amount } = yield call(bridge.getTransferToHome, txHash);
     if (!tx || !amount) {
         console.error("Transaction:", txHash, "not found");
@@ -148,6 +151,7 @@ export function* initWithdrawProcedure(bridge: BridgeAPI, txHash: string) {
     yield put({ type: WITHDRAW_PROCEDURE_SUCCESS })
 
     yield spawn(updateBalances, bridge);
+    yield put(removeTransfer(txHash));
 
     yield cancel(eventListener);
 

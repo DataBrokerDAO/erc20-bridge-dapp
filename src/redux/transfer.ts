@@ -41,7 +41,7 @@ export enum TransferStatus {
 
 export enum TransferType {
     Deposit = "deposit",
-    Withdrawal = "withdrawal"
+    Withdrawal = "withdraw"
 }
 
 export enum DepositSteps {
@@ -85,8 +85,8 @@ const startedReducer = (type: TransferType, currentStep: DepositSteps | Withdraw
     (state: ITransferState, { amount }: any) =>
         ({ ...initialState, status: TransferStatus.Pending, amount, type, currentStep })
 
-function successReducer() {
-    return initialState;
+function successReducer(state: ITransferState) {
+    return { ...state, status: TransferStatus.Success };
 }
 
 function failureReducer(state: ITransferState) {

@@ -10,17 +10,20 @@ import createSagaMiddleware from 'redux-saga';
 import rootSaga from './rootSaga';
 
 import { IAccountState, reducer as accountReducer } from './account';
+import { IPendingTransfersState, reducer as pendingTransfersReducer } from './pendingTransfers';
 import { ITransferState, reducer as transferReducer } from './transfer';
 
 export interface IReduxState {
   account: IAccountState,
   transfer: ITransferState,
+  pendingTransfers: IPendingTransfersState,
   router: RouterState
 }
 
 const rootReducer = combineReducers({
   account: accountReducer,
   transfer: transferReducer,
+  pendingTransfers: pendingTransfersReducer
 });
 
 export default function configureStore(initialState = {}, history: History) {
@@ -38,7 +41,7 @@ export default function configureStore(initialState = {}, history: History) {
 
   const persistConfig = {
     key: 'root',
-    whitelist: ['account'],
+    whitelist: ['account', 'pendingTransfers'],
     storage,
   }
 
