@@ -2,7 +2,7 @@
 The Databroker DAO platform will launch at the end of the summer.
 Currently all DTX resides on the main net but our platform is build on top of a private blockchain were all related contracts are stored. Therefore we require a way to let users transfer their DTX from the main net to our network for usage on the platform.
 
-![](DTX%20Bridge/pending.png)
+![](pending-transfer.png)
 
 To achieve this our team has created a bridge that is capable of transferring ERC20 tokens from a “Home” network to a “Foreign” network. For Databroker DAO this means that the DTX token can be transferred between the main net and the Databroker network.
 
@@ -29,35 +29,35 @@ Although not necessary, the Dapp provides an accessible way for users to make us
 
 ### Try it out
 
-![](DTX%20Bridge/1824C079-5BAE-4D63-9A9C-71D55C8A04E1.png)
+![](login.png)
 Login to your account with a mnemonic or your private keys.
 
-![](DTX%20Bridge/74C78D7F-D66E-4B4A-8EEF-ACB58FBECBD7.png)
+![](home.png)
 You can deposit tokens to the Databroker network or you can withdraw them back to the main network.
 
 ### Depositing
 
-![](DTX%20Bridge/sending.png)
+![](deposit-sent.png)
 Next, we wait until the tokens arrive at the bridge.
 
-![](DTX%20Bridge/signatures.png)
+![](deposit-signatures.png)
 Once the bridge receives our tokens, validator nodes have to give permission to cross the bridge. 
 
 
-![](DTX%20Bridge/minted.png) 
+![](deposit-success.png) 
 When enough validators have signed off on the request, the bridge on the Databroker network mints tokens to your account. The transfer procedure is complete.
 
 ### Withdrawing
 
 The first 2 steps are equal to those when depositing.
 
-![](DTX%20Bridge/deposit%203.png)
+![](withdraw-confirm.png)
 The main network is ready to transfer the funds to your account but this transaction costs gas on the main network. If your balance is too low you can come back later to complete it.
 
-![](DTX%20Bridge/withdrawing.png)
+![](withdraw-sent.png)
 
 
-![](DTX%20Bridge/withdraw%20done.png)
+![](withdraw-success.png)
 Withdrawal was successful and your balance has been updated.
 
 Github Projects:
