@@ -3,8 +3,8 @@ import { delay } from "redux-saga";
 import { call, cancel, fork, put, select, spawn, take } from "redux-saga/effects";
 import { EventLog } from "../../node_modules/web3/types";
 import BridgeAPI from "../api/bridge";
-import { setHomeEthBalance } from "./account";
-import { updateBalances } from "./accountSagas";
+import { fetchBalances } from "./accountSagas";
+import { selectBridge } from "./bridge";
 import { IReduxState } from "./configureStore";
 import { addTransfer, removeTransfer } from "./pendingTransfers";
 import {
@@ -59,7 +59,8 @@ export function isWithdrawalPath(pathname: string) {
 }
 
 
-export const depositProcedure = (bridge: BridgeAPI) => function* (action: IAction) {
+export function* depositProcedure(action: IAction) {
+    const bridge: BridgeAPI = yield select(selectBridge);
     const { amount } = action.payload;
     yield put(newDeposit(amount));
 
@@ -91,16 +92,17 @@ export function* initDepositProcedure(bridge: BridgeAPI, txHash: string) {
 
     yield put(setCurrentStep(DepositSteps.Minted))
 
-    yield put({ type: DEPOSIT_PROCEDURE_SUCCESS })
+    yield call(fetchBalances, bridge);
 
-    yield spawn(updateBalances, bridge);
+    yield put({ type: DEPOSIT_PROCEDURE_SUCCESS })
 
     yield put(removeTransfer(txHash));
     yield cancel(eventListener);
     return 0;
 }
 
-export const withdrawProcedure = (bridge: BridgeAPI) => function* (action: IAction) {
+export function* withdrawProcedure(action: IAction) {
+    const bridge: BridgeAPI = yield select(selectBridge);
     const { amount } = action.payload;
     yield put(newWithdraw(amount));
 
@@ -136,9 +138,6 @@ export function* initWithdrawProcedure(bridge: BridgeAPI, txHash: string) {
     const estimateGas = yield call(bridge.estimateWithdrawGas, withdrawCall);
     yield put(setEstimateWithdrawGas(estimateGas));
 
-    const homeEthBalance = yield call(bridge.getHomeBalance);
-    yield put(setHomeEthBalance(homeEthBalance));
-
     yield put(setCurrentStep(WithdrawalSteps.Signed));
 
     yield take(CONFIRM_WITHDRAW);
@@ -150,7 +149,7 @@ export function* initWithdrawProcedure(bridge: BridgeAPI, txHash: string) {
 
     yield put({ type: WITHDRAW_PROCEDURE_SUCCESS })
 
-    yield spawn(updateBalances, bridge);
+    yield spawn(fetchBalances, bridge);
     yield put(removeTransfer(txHash));
 
     yield cancel(eventListener);

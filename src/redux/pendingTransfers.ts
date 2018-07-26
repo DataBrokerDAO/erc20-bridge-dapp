@@ -30,7 +30,7 @@ export const reducer = createReducer<IPendingTransfersState>({
         pendingTransfer
     ]),
     [REMOVE_TRANSFER]: (transfers, { txHash }) => 
-        transfers.filter(hash => hash === txHash)
+        transfers.filter(t => t.transactionHash !== txHash)
 }, initialState)
 
 /**

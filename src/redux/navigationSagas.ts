@@ -1,8 +1,9 @@
 import { Location } from 'history';
 import { AnyAction } from 'redux';
-import { put, spawn } from 'redux-saga/effects'
+import { put, select, spawn } from 'redux-saga/effects'
 import BridgeAPI from '../api/bridge';
 
+import { selectBridge } from './bridge';
 import * as transfer from './transfer';
 import {
   getTxHashFromPath,
@@ -12,7 +13,8 @@ import {
   isWithdrawalPath
 } from "./transferSagas";
 
-export const navigationProcedure = (bridge: BridgeAPI) => function* (action: AnyAction) {
+export function* navigationProcedure (action: AnyAction) {
+    const bridge: BridgeAPI = yield select(selectBridge);
     const location: Location = action.payload.location;
 
     // User opened a pending transfer

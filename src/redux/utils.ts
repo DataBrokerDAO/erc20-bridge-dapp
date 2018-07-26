@@ -32,6 +32,16 @@ export const eventFilter = (actionType: string, eventName: string, filter = {}) 
         return false;
     }
     const filterMatches = !Object.keys(filter)
-        .find(key => filter[key] !== payload.returnValues[key])
+        .find(key => {
+          let filterVal = filter[key];
+          if (typeof filterVal === "string") {
+            filterVal = filterVal.toLowerCase();
+          }
+          let val = payload.returnValues[key];
+          if (typeof filterVal === "string") {
+            val = val.toLowerCase();
+          }
+          return val !== filterVal;
+        })
     return filterMatches;
 }

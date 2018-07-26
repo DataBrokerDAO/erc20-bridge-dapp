@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import HDWalletProvider from 'truffle-hdwallet-provider';
+import PrivateKeyProvider from 'truffle-privatekey-provider';
 import Web3 from 'web3';
 
 import * as ForeignBridge from '@settlemint/erc20-bridge/build/contracts/ForeignBridge.json';
@@ -21,8 +21,6 @@ export default class BridgeAPI {
 
   public account: any;
 
-  private mnemonic: string;
-
   private home3: any;
   private foreign3: any;
 
@@ -33,9 +31,7 @@ export default class BridgeAPI {
   private homeToken: any;
   private foreignToken: any;
 
-  constructor(mnemonic: string) {
-    this.mnemonic = mnemonic;
-
+  constructor() {
     this.setup = this.setup.bind(this);
     this.getHomeTokenBalance = this.getHomeTokenBalance.bind(this);
     this.getForeignTokenBalance = this.getForeignTokenBalance.bind(this);
@@ -51,25 +47,36 @@ export default class BridgeAPI {
     this.getTransferToHome = this.getTransferToHome.bind(this);
     this.getHomeBlock = this.getHomeBlock.bind(this);
     this.getForeignBlock = this.getForeignBlock.bind(this);
+    this.isConnected = this.isConnected.bind(this);
   }
 
-  public async setup() {
+  public async setup(privateKey: string) {
     const config = getConfig();
 
     this.home3 = new Web3(
-      new HDWalletProvider(this.mnemonic, config.HOME_URL)
+      new PrivateKeyProvider(privateKey, config.HOME_URL)
     );
     this.foreign3 = new Web3(
-      new HDWalletProvider(this.mnemonic, config.FOREIGN_URL)
+      new PrivateKeyProvider(privateKey, config.FOREIGN_URL)
     );
 
-    this.account = (await this.home3.eth.getAccounts())[0];
+    this.account = this.home3.currentProvider.address;
 
     this.homeBridge = await new this.home3.eth.Contract(HomeBridge.abi, config.HOME_BRIDGE);
     this.foreignBridge = await new this.foreign3.eth.Contract(ForeignBridge.abi, config.FOREIGN_BRIDGE);
 
     this.homeToken = await new this.home3.eth.Contract(SampleERC20.abi, config.HOME_TOKEN);
     this.foreignToken = await new this.foreign3.eth.Contract(SampleERC20.abi, config.FOREIGN_TOKEN);
+  }
+
+  public async isConnected() {
+    try {
+      await this.foreign3.eth.getGasPrice();
+      return true;
+    } catch(err) {
+      console.log(err)
+      return false;
+    }
   }
 
   public async getHomeTokenBalance() {
@@ -148,8 +155,10 @@ export default class BridgeAPI {
     let events = await token.getPastEvents('Transfer', {
       fromBlock: tx.blockNumber,
       toBlock: tx.blockNumber,
+      filter: { from: this.account }
     })
-    events = events.filter((evt: EventLog) => evt.returnValues.from === this.account);
+    events = events.filter((evt: EventLog) =>
+      evt.returnValues.from.toLowerCase() === this.account.toLowerCase());
     let amount;
     if (events.length) {
       amount = events[0].returnValues.value;

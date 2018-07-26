@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import BigNumber from 'bignumber.js';
 import { connect } from 'react-redux';
-import { requestHomeEthBalance } from '../../../redux/account';
+import { fetchBalancesRequest } from '../../../redux/account';
 import { IAccountState } from '../../../redux/account';
 import { confirmWithdraw, ITransferState } from '../../../redux/transfer';
 
@@ -10,7 +10,7 @@ class WithdrawStep extends Component<{
   transfer: ITransferState;
   account: IAccountState;
   confirmWithdraw: any;
-  requestHomeEthBalance: any;
+  fetchBalancesRequest: any;
 }> {
   public render() {
     const { transfer, account } = this.props;
@@ -57,7 +57,7 @@ class WithdrawStep extends Component<{
         ) : (
             <button
               className="btn btn-primary btn-lg mx-2"
-              onClick={this.props.requestHomeEthBalance}>Check funds</button>
+              onClick={this.props.fetchBalancesRequest}>Check funds</button>
           )}
       </div>
     );
@@ -66,5 +66,5 @@ class WithdrawStep extends Component<{
 export default connect(
   undefined,
   // ({ transfer }: IReduxState) => ({ transfer }),
-  { confirmWithdraw, requestHomeEthBalance }
+  { confirmWithdraw, fetchBalancesRequest }
 )(WithdrawStep);

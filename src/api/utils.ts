@@ -1,3 +1,6 @@
+import bip39 from 'bip39';
+import hdkey from 'ethereumjs-wallet/hdkey';
+
 export const timeout = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
 
@@ -73,4 +76,13 @@ export async function collectSignatures(
   });
 
   return { v, r, s, withdrawBlock };
+}
+
+export function decodeMnemonic(mnemonic: string) {
+  let hdwallet = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
+  const path = "m/44'/60'/0'/0/" + 0;
+
+  hdwallet = hdwallet.derivePath(path);
+  const addr = hdwallet._hdkey._privateKey;
+  return addr.toString("hex");
 }

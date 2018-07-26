@@ -1,7 +1,9 @@
-declare module 'truffle-hdwallet-provider' {
+declare module 'ethereumjs-wallet/hdkey';
+
+declare module 'truffle-privatekey-provider' {
   import { HttpProvider, JsonRPCRequest, JsonRPCResponse, Provider } from 'web3/types'
 
-  export default class HDWalletProvider implements HttpProvider {
+  export default class PrivateKeyProvider implements HttpProvider {
     public responseCallbacks: undefined;
     public notificationCallbacks: undefined;
     public connection: undefined;

@@ -1,3 +1,25 @@
-.LoginPage--container {
+.LoginPage {
   padding: 40px;
+
+  .nav {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    left: 0;
+
+    .nav-link {
+      color: #007bff;
+    }
+
+    .active {
+      border-radius: 0;
+      color: unset;
+    }
+  }
+
+  form {
+    input {
+      flex: 1;
+    }
+  }
 }

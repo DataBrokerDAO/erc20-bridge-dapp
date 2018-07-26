@@ -1,3 +1,4 @@
+import BridgeAPI from '../api/bridge';
 import { IReduxState } from './configureStore';
 import { createContext, createReducer } from './utils';
 
@@ -6,20 +7,20 @@ import { createContext, createReducer } from './utils';
  */
 export const ctx = createContext('account');
 
-export const LOGIN = ctx('LOGIN');
+export const LOGIN_REQUEST = ctx('LOGIN_REQUEST');
+export const LOGIN_SUCCESS = ctx('LOGIN_SUCCESS');
+export const LOGIN_FAILURE = ctx('LOGIN_FAILURE');
 export const LOGOUT = ctx('LOGOUT');
-export const SET_ADDRESS = ctx('SET_ADDRESS');
 
+export const FETCH_BALANCES_REQUEST = ctx('FETCH_BALANCES_REQUEST');
 export const FETCH_BALANCES_SUCCESS = ctx('FETCH_BALANCES_SUCCESS');
-
-export const REQUEST_HOME_ETH_BALANCE = ctx('REQUEST_HOME_ETH_BALANCE');
-export const SET_HOME_ETH_BALANCE = ctx('SET_HOME_ETH_BALANCE');
 
 /**
  * Reducer
  */
 
 export enum AccountStatus {
+  LoggingIn = "pending",
   LoggedIn = "in",
   LoggedOut = "out",
 }
@@ -27,7 +28,7 @@ export enum AccountStatus {
 export interface IAccountState {
   status: AccountStatus;
   address?: string,
-  mnemonic?: string;
+  privateKey?: string;
   homeBalance: string;
   foreignBalance: string;
   homeEthBalance: string;
@@ -42,22 +43,21 @@ const initialState: IAccountState = {
 
 export const reducer = createReducer<IAccountState>({
   [LOGOUT]: () => initialState,
-  [LOGIN]: (state, { mnemonic }) => ({
+  [LOGIN_REQUEST]: (state) => ({
+    ...state,
+    status: AccountStatus.LoggingIn,
+  }),
+  [LOGIN_SUCCESS]: (state, { privateKey, address }) => ({
     ...state,
     status: AccountStatus.LoggedIn,
-    mnemonic
+    privateKey,
+    address
   }),
-  [SET_ADDRESS]: (state, { address }) => ({
-      ...state,
-      address
-  }),
-  [FETCH_BALANCES_SUCCESS]: (state, { homeBalance, foreignBalance }) => ({
+  [LOGIN_FAILURE]: () => initialState,
+  [FETCH_BALANCES_SUCCESS]: (state, { homeBalance, foreignBalance, homeEthBalance }) => ({
     ...state,
     homeBalance,
-    foreignBalance
-  }),
-  [SET_HOME_ETH_BALANCE]: (state, { homeEthBalance }) => ({
-    ...state,
+    foreignBalance,
     homeEthBalance
   }),
 }, initialState)
@@ -66,32 +66,36 @@ export const reducer = createReducer<IAccountState>({
  * Actions
  */
 
-export const login = (mnemonic: string) => ({
-  type: LOGIN,
+export const loginWithMnemonic = (mnemonic: string) => ({
+  type: LOGIN_REQUEST,
   payload: { mnemonic }
+});
+
+export const loginWithPrivateKey = (privateKey: string) => ({
+  type: LOGIN_REQUEST,
+  payload: { privateKey }
+});
+
+export const loginSuccess = (bridge: BridgeAPI, privateKey: string, address: string) => ({
+  type: LOGIN_SUCCESS,
+  payload: { privateKey, address, bridge }
+});
+
+export const loginFailure = () => ({
+  type: LOGIN_FAILURE,
 });
 
 export const logout = () => ({
   type: LOGOUT,
 });
 
-export const fetchBalancesSuccess = (homeBalance: string, foreignBalance: string) => ({
+export const fetchBalancesRequest = () => ({
+  type: FETCH_BALANCES_REQUEST
+});
+
+export const fetchBalancesSuccess = (homeBalance: string, foreignBalance: string, homeEthBalance: string) => ({
   type: FETCH_BALANCES_SUCCESS,
-  payload: { homeBalance, foreignBalance }
-});
-
-export const setHomeEthBalance = (homeEthBalance: string) => ({
-  type: SET_HOME_ETH_BALANCE,
-  payload: { homeEthBalance }
-});
-
-export const setAddress = (address: string) => ({
-    type: SET_ADDRESS,
-    payload: { address }
-});
-
-export const requestHomeEthBalance = () => ({
-    type: REQUEST_HOME_ETH_BALANCE,
+  payload: { homeBalance, foreignBalance, homeEthBalance }
 });
 
 /**
